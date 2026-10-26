@@ -1,0 +1,273 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Archeion - Similarity Reports{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/faculty.css' %}">
+<style>
+  .role-icon {
+    font-size: 1.1rem;
+  }
+</style>
+
+<main class="mt-100 mb-5 fac-reports">
+  <div class="sim-results-main">
+
+    <div class="text-center mb-4">
+      <h1 class="h1-sim-title">Similarity Reports Faculty Dashboard</h1>
+      <p class="p-sim-sub">Every similarity check run by students and faculty, with their closest matches in the repository.</p>
+    </div>
+
+    <!-- Summary -->
+    <section class="fac-dashboard mb-4">
+      <div class="row g-3">
+
+        <!-- Total checks -->
+        <div class="col-6 col-lg-3">
+          <a href="{% url 'users:faculty_reports' %}" class="fac-stat-card fac-stat-orange">
+            <div class="fac-stat-icon-top"><i class="bi bi-file-earmark-text-fill"></i></div>
+            <div class="mt-auto">
+              <p class="fac-stat-number">{{ summary.total }}</p>
+              <p class="fac-stat-text">Total checks</p>
+            </div>
+          </a>
+        </div>
+
+        <!-- Last 7 days -->
+        <div class="col-6 col-lg-3">
+          <a href="?from={{ summary.week_from }}" class="fac-stat-card fac-stat-dark">
+            <div class="fac-stat-icon-top"><i class="bi bi-calendar-week-fill"></i></div>
+            <div class="mt-auto">
+              <p class="fac-stat-number">{{ summary.this_week }}</p>
+              <p class="fac-stat-text">Checks in the last 7 days</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-12 col-lg-6 d-flex flex-column gap-3">
+
+          <!-- Who ran checks -->
+          <div class="fac-stat-card fac-stat-dark fac-stat-wide">
+            <i class="bi bi-people-fill"></i>
+            <div>
+              <p class="fac-stat-number">{{ summary.students }}</p>
+              <p class="fac-stat-text">Students who ran checks</p>
+            </div>
+            <div class="ms-4">
+              <p class="fac-stat-number">{{ summary.faculty }}</p>
+              <p class="fac-stat-text">Faculty who ran checks</p>
+            </div>
+          </div>
+
+          <!-- Bands -->
+          <div class="row g-3 flex-grow-1">
+            <div class="col-12 col-sm-4">
+              <a href="?band=high" class="fac-stat-card fac-stat-orange fac-stat-small">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <div>
+                  <p class="fac-stat-number">{{ summary.high }}</p>
+                  <p class="fac-stat-text">High</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-12 col-sm-4">
+              <a href="?band=moderate" class="fac-stat-card fac-stat-light fac-stat-small">
+                <i class="bi bi-dash-circle-fill"></i>
+                <div>
+                  <p class="fac-stat-number">{{ summary.moderate }}</p>
+                  <p class="fac-stat-text">Moderate</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-12 col-sm-4">
+              <a href="?band=none" class="fac-stat-card fac-stat-dark fac-stat-small">
+                <i class="bi bi-check-circle-fill"></i>
+                <div>
+                  <p class="fac-stat-number">{{ summary.none }}</p>
+                  <p class="fac-stat-text">No matches</p>
+                </div>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Filters (directly below the stat cards) -->
+    <section class="sim-panel mb-3">
+      <form method="get" class="fac-filters">
+        {% if student_id %}<input type="hidden" name="student" value="{{ student_id }}">{% endif %}
+        <div class="fac-filter fac-filter-search">
+          <label class="fac-filter-label" for="f-q">Name or title</label>
+          <input id="f-q" type="text" name="q" value="{{ q }}" class="form-control fac-filter-input" placeholder="Search">
+        </div>
+        <div class="fac-filter">
+          <label class="fac-filter-label" for="f-band">Result</label>
+          <select id="f-band" name="band" class="form-select fac-filter-input">
+            <option value="" {% if not band %}selected{% endif %}>All</option>
+            <option value="high" {% if band == 'high' %}selected{% endif %}>High</option>
+            <option value="moderate" {% if band == 'moderate' %}selected{% endif %}>Moderate</option>
+            <option value="none" {% if band == 'none' %}selected{% endif %}>No matches</option>
+          </select>
+        </div>
+        <div class="fac-filter">
+          <label class="fac-filter-label" for="f-sort">Sort</label>
+          <select id="f-sort" name="sort" class="form-select fac-filter-input">
+            <option value="newest" {% if sort != 'highest' %}selected{% endif %}>Newest</option>
+            <option value="highest" {% if sort == 'highest' %}selected{% endif %}>Highest score</option>
+          </select>
+        </div>
+        <div class="fac-filter">
+          <label class="fac-filter-label" for="f-from">From</label>
+          <input id="f-from" type="date" name="from" value="{{ date_from }}" class="form-control fac-filter-input">
+        </div>
+        <div class="fac-filter">
+          <label class="fac-filter-label" for="f-to">To</label>
+          <input id="f-to" type="date" name="to" value="{{ date_to }}" class="form-control fac-filter-input">
+        </div>
+        <div class="fac-filter-actions">
+          <button type="submit" class="fac-filter-btn">Apply</button>
+          <a href="{% url 'users:faculty_reports' %}" class="fac-clear-link text-decoration-none text-secondary">Clear</a>
+        </div>
+      </form>
+    </section>
+
+    <!-- Most Matched + All Checks, side by side -->
+    <div class="row g-3 align-items-start">
+
+      <!-- Most matched studies -->
+      {% if most_matched %}
+      <div class="col-12 col-xl-6">
+        <section class="sim-panel sim-sources">
+          <p class="sim-panel-title mb-0">Most Matched Studies</p>
+          <p class="sim-sources-sub">Repository studies that checks overlap with most often. Topics here are the most crowded.</p>
+
+          {% for m in most_matched %}
+          <a class="sim-source" href="{% url 'papers:document_info' m.compared_paper %}">
+
+            <div class="d-flex align-items-center gap-3 flex-grow-1">
+
+              <div class="browse-result-icon">
+                {% if m.compared_paper__program == 'IT-WMA' %}
+                  <i class="bi bi-globe2"></i>
+                {% elif m.compared_paper__program == 'IT-TSM' %}
+                  <i class="bi bi-tools"></i>
+                {% elif m.compared_paper__program == 'IT-NA' %}
+                  <i class="bi bi-diagram-3"></i>
+                {% elif m.compared_paper__program == 'CS' %}
+                  <i class="bi bi-code-slash"></i>
+                {% elif m.compared_paper__program == 'IS' %}
+                  <i class="bi bi-graph-up-arrow"></i>
+                {% else %}
+                  <i class="bi bi-file-earmark-text"></i>
+                {% endif %}
+              </div>
+
+              <div class="sim-source-body">
+                <p class="sim-source-title">{{ m.compared_paper__title }}</p>
+                <p class="sim-source-meta">
+                  {% if m.compared_paper__program %}<span class="browse-result-program">{{ m.compared_paper__program }}</span>{% endif %}
+                  {% if m.compared_paper__program and m.compared_paper__year %}<span class="sim-sep">•</span>{% endif %}
+                  {% if m.compared_paper__year %}{{ m.compared_paper__year }}{% endif %}
+                </p>
+              </div>
+
+            </div>
+
+            <div class="text-end">
+              <span class="sim-source-pct">{{ m.times }} check{{ m.times|pluralize }}</span>
+              <p class="fac-stat-label mb-0">{{ m.people }} {% if m.people == 1 %}person{% else %}people{% endif %}</p>
+            </div>
+
+          </a>
+          {% endfor %}
+        </section>
+      </div>
+      {% endif %}
+
+      <!-- Checks -->
+      <div class="col-12 {% if most_matched %}col-xl-6{% endif %}">
+        <section class="sim-panel sim-sources">
+          {% if selected_student %}
+            <p class="sim-panel-title mb-0">Checks by {{ selected_student }}</p>
+            <p class="sim-sources-sub">
+              {{ result_count }} check{{ result_count|pluralize }}, newest first unless sorted.
+              <a href="{% url 'users:faculty_reports' %}" class="text-dark">Show everyone</a>
+            </p>
+          {% else %}
+            <p class="sim-panel-title mb-0">All Checks</p>
+            <p class="sim-sources-sub">{{ result_count }} check{{ result_count|pluralize }}. Select a name to see their history.</p>
+          {% endif %}
+
+          {% for r in reports %}
+          <div class="sim-source sim-source-{% if r.band %}{{ r.band|lower }}{% else %}none{% endif %}">
+            <div class="sim-source-body flex-grow-1">
+              <a class="sim-source-title text-dark text-decoration-none d-flex align-items-center gap-2" href="{% url 'similarity:past_result' r.paper_id %}">
+                <span>{{ r.title }}</span>
+              </a>
+              <p class="sim-source-meta">
+                <a class="browse-result-program text-decoration-none" href="?student={{ r.student_id }}">{{ r.student }}</a>
+                {% if r.role %}<span class="sim-sep">•</span><span class="text-capitalize">{{ r.role }}</span>{% endif %}
+                <span class="sim-sep">•</span>
+                {{ r.date|date:"m/d/Y" }}
+                <span class="sim-sep">•</span>
+                {{ r.compared }} source{{ r.compared|pluralize }}
+              </p>
+            </div>
+            <div class="sim-source-score">
+              {% if r.band %}
+                <progress class="sim-bar sim-bar-{{ r.band|lower }}" max="100" value="{{ r.pct }}">{{ r.pct }}%</progress>
+                <span class="sim-source-pct fac-pct fac-pct-{{ r.band|lower }}">{{ r.pct }}%</span>
+              {% else %}
+                <span class="fac-stat-label">No matches</span>
+              {% endif %}
+            </div>
+          </div>
+          {% empty %}
+            <p class="sim-sources-sub mb-0">No checks match these filters.</p>
+          {% endfor %}
+
+          {% if page.has_other_pages %}
+          <nav class="browse-pagination mt-4" aria-label="Pagination">
+            <ul class="pagination pagination-sm justify-content-center flex-wrap mb-0">
+
+              {% if page.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.previous_page_number }}" aria-label="Previous page"><i class="bi bi-chevron-left"></i></a>
+              </li>
+              {% else %}
+              <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>
+              {% endif %}
+
+              {% for p in page_range %}
+                {% if p == page.paginator.ELLIPSIS %}
+                  <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% elif p == page.number %}
+                  <li class="page-item active" aria-current="page"><span class="page-link">{{ p }}</span></li>
+                {% else %}
+                  <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ p }}">{{ p }}</a></li>
+                {% endif %}
+              {% endfor %}
+
+              {% if page.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.next_page_number }}" aria-label="Next page"><i class="bi bi-chevron-right"></i></a>
+              </li>
+              {% else %}
+              <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>
+              {% endif %}
+
+            </ul>
+            <p class="p-sim-sub">Showing {{ page.start_index }}–{{ page.end_index }} of {{ page.paginator.count }}</p>
+          </nav>
+          {% endif %}
+        </section>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+{% endblock %}

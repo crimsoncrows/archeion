@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+  Contact — Archeion
+{% endblock %}
+
+{% block content %}
+  <div class="mt-100 mb-5">
+    <div class="container">
+      <div class="row g-5 align-items-start">
+        <div class="col-lg-5">
+          <h1 class="h1-contact-title">Reach out to us!</h1>
+          <p class="p-contact-sub">For inquiries, technical concerns, or feedback regarding the Archeion Research Repository, please do not hesitate to reach out to us.</p>
+          <img src="{% static 'imgs/footer/contact.png' %}" alt="Contact illustration" class="img-fluid mt-3" style="max-width: 320px;" />
+        </div>
+
+        <div class="col-lg-7">
+          <div class="card contact-card border-0">
+            <div class="card-header contact-card-header border-0">
+              <img src="{% static 'imgs/logo/archeion_light.png' %}" alt="Archeion" class="contact-card-logo mb-1" />
+              <p class="p-contact-card-sub mb-0">Research tool powered by SBERT.</p>
+            </div>
+            <div class="card-body contact-card-body">
+              <h6 class="h6-contact-team">Archeion Team</h6>
+              <p class="p-contact-team-desc">For system-related issues or bug reports, students and faculty may also coordinate directly with the Archeion development team through our email below.</p>
+
+              <ul class="list-group list-group-flush mt-3">
+                <li class="list-group-item p-contact-info px-0">
+                  <i class="bi bi-geo-alt-fill me-2 text-muted"></i>
+                  College of Computer Studies Tarlac State University, San Isidro, Tarlac City, Tarlac, Philippines 2300
+                </li>
+                <li class="list-group-item p-contact-info px-0">
+                  <i class="bi bi-clock-fill me-2 text-muted"></i>
+                  Office Hours: Tuesday to Saturday, 7:00 AM – 6:00 PM
+                </li>
+                <li class="list-group-item p-contact-info px-0">
+                  <i class="bi bi-geo-alt-fill me-2 text-muted"></i>
+                  Tarlac State University Romulo Blvd., San Vicente, Tarlac City, Tarlac, Philippines 2300
+                </li>
+                <li class="list-group-item p-contact-info px-0">
+                  <i class="bi bi-envelope-fill me-2 text-muted"></i>
+                  <a href="https://tsu.edu.ph" target="_blank" class="contact-link">Official TSU Website</a>
+                  <span class="mx-2 text-muted">·</span>
+                  <a href="mailto:archeion.research4@gmail.com" class="contact-link">archeion.research4@gmail.com</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

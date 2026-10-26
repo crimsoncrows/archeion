@@ -1,0 +1,234 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Archeion - Similarity Check{% endblock %}
+
+{% block content %}
+<main class="mt-100 mb-5">
+  <div class="sim-loading position-fixed top-0 start-0 w-100 h-100 d-none flex-column align-items-center justify-content-center text-center px-3"
+     id="simLoading" role="status" aria-live="polite">
+  <div class="spinner-border spinner-loader mb-4" aria-hidden="true"></div>
+  <p class="sim-loading-title">Analyzing your study</p>
+  <p class="sim-loading-sub">Comparing it against the repository. This can take about a few minutes, so please keep this page open.</p>
+</div>
+  <div class="container">
+
+    <div class="text-center mb-4">
+      <h1 class="h1-sim-title">Similarity Analysis</h1>
+      <p class="p-sim-sub">Check how closely your study matches existing research in the repository. Similarity is measured by meaning using vector embeddings, not just matching words.</p>
+    </div>
+
+    <div class="row justify-content-center g-4 sim-input-tabs">
+
+      <!-- LEFT COLUMN: input -->
+      <div class="col-lg-7">
+        <div class="card shadow-sm sim-upload-card">
+
+          {% if form.errors %}
+          <div class="alert alert-danger mb-3" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+            {% for error in form.document_file.errors %}{{ error }}<br>{% endfor %}
+            {% for error in form.text_input.errors %}{{ error }}<br>{% endfor %}
+          </div>
+          {% endif %}
+
+          <ul class="nav nav-tabs mb-3" id="simTab">
+            <li class="nav-item">
+              <a class="nav-link active" href="#uploadTab" data-bs-toggle="tab">Upload</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#textTab" data-bs-toggle="tab">Input Text</a>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+
+            <div class="tab-pane fade show active" id="uploadTab">
+              <form method="post" enctype="multipart/form-data" class="sim-form">
+                {% csrf_token %}
+                <p class="p-sim-upload-title">Upload File</p>
+                <p class="p-sim-sub mb-3">Accepted formats: PDF, DOCX, or TXT (10 MB max).</p>
+                <input type="file" name="document_file" id="id_document_file"
+                       class="form-control mb-4" accept=".pdf,.docx,.txt">
+                <div class="d-flex justify-content-end">
+                  <button type="submit" class="btn btn-secondary d-flex align-items-center gap-2 sim-upload-btn">
+                    <i class="bi bi-upload"></i> Upload and Analyze
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div class="tab-pane fade" id="textTab">
+              <form method="post" class="sim-form">
+                {% csrf_token %}
+                <p class="p-sim-upload-title">Input Text</p>
+                <p class="p-sim-sub mb-3">Type or paste your title, abstract, or manuscript.</p>
+                <div class="alert alert-secondary mb-3" role="alert" id="wordCounter">0 / 2000 words</div>
+                <textarea class="form-control mb-4 input-sim-text" rows="6" name="text_input"
+                  placeholder="Enter your text." id="userInputText" oninput="countWords()">{{ form.text_input.value|default_if_none:"" }}</textarea>
+                <div class="d-flex justify-content-end">
+                  <button type="submit" class="btn btn-secondary d-flex align-items-center gap-2 sim-upload-btn">
+                    <i class="bi bi-send"></i> Submit and Analyze
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Privacy note -->
+               <!-- Privacy note -->
+        <div class="card sim-upload-card mt-4">
+          <p class="p-sim-info-title d-flex justify-content-between align-items-center">
+            <span>Your Privacy</span>
+            <i class="bi bi-shield-lock"></i>
+          </p>
+          <p class="p-sim-sub mb-0">Your uploaded file and pasted text are never saved or added to the repository. They're only used to run the comparison. Your similarity results can be viewed by professors, but your submitted file cannot.</p>
+        </div>
+
+        <div class="card sim-upload-card mt-4">
+          <p class="p-sim-info-title d-flex justify-content-between align-items-center">
+            <span>Tips for Better Results</span>
+            <i class="bi bi-lightbulb"></i>
+          </p>
+          <p class="p-sim-sub mb-0">Submit your full manuscript, or at least your abstract and methodology, for the most accurate score. Very short inputs give less reliable results. Scanned PDFs without selectable text can't be read, so use a text-based PDF, DOCX, or TXT file.</p>
+        </div>
+
+        <div class="card sim-upload-card mt-4">
+          <p class="p-sim-info-title d-flex justify-content-between align-items-center">
+            <span>What the Score Means</span>
+            <i class="bi bi-info-circle"></i>
+          </p>
+          <p class="p-sim-sub mb-0">A high score doesn't mean plagiarism. It means your study covers similar ground as existing research. Use the matched studies to check your topic's originality and to find related work you should cite.</p>
+        </div>
+
+        <div class="card sim-upload-card mt-4">
+          <p class="p-sim-info-title d-flex justify-content-between align-items-center">
+            <span>What You're Compared Against</span>
+            <i class="bi bi-journal-text"></i>
+          </p>
+          <p class="p-sim-sub mb-0">Your input is compared only with the academic studies stored in Archeion. It doesn't search the internet or outside databases, so a low score here doesn't guarantee your study is unique elsewhere.</p>
+        </div>
+
+        <div class="card sim-upload-card mt-4">
+          <p class="p-sim-info-title d-flex justify-content-between align-items-center">
+            <span>Natural Language Processing</span>
+            <i class="bi bi-cpu"></i>
+          </p>
+          <p class="p-sim-sub mb-0">Archeion analyzes the meaning of your text against stored studies and generates a comparison matrix highlighting relevant similarities. Results are produced automatically and should be reviewed by you and your adviser.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: how it works -->
+      <div class="col-lg-5">
+        <aside class="card shadow-sm sim-info-card">
+
+          <!-- How it works -->
+          <p class="p-sim-upload-title">How It Works</p>
+          <p class="p-sim-sub mb-3">Here's what happens after you submit your input.</p>
+
+          <ol class="sim-steps">
+            <li class="sim-step">
+              <span class="sim-step-num">1</span>
+              <div>
+                <p class="sim-step-title">Submit your input</p>
+                <p class="sim-step-text">Upload a file or paste your text. Word limits and accepted formats are shown on each tab.</p>
+              </div>
+            </li>
+            <li class="sim-step">
+              <span class="sim-step-num">2</span>
+              <div>
+                <p class="sim-step-title">Text is converted to embeddings</p>
+                <p class="sim-step-text">Your content is turned into vectors that capture its meaning, not just matching words.</p>
+              </div>
+            </li>
+            <li class="sim-step">
+              <span class="sim-step-num">3</span>
+              <div>
+                <p class="sim-step-title">Compared against the database</p>
+                <p class="sim-step-text">Your vectors are compared with the academic studies stored in Archeion to find the closest matches.</p>
+              </div>
+            </li>
+            <li class="sim-step">
+              <span class="sim-step-num">4</span>
+              <div>
+                <p class="sim-step-title">Get your report</p>
+                <p class="sim-step-text">You'll see an overall similarity score, the matched studies, and can download the report.</p>
+              </div>
+            </li>
+          </ol>
+
+          <hr class="sim-divider">
+
+          <!-- Similarity scale -->
+          <p class="p-sim-upload-title">Similarity Scale</p>
+          <p class="p-sim-sub mb-3">The score tells you how closely your input matches existing studies.</p>
+
+          <ul class="sim-scale">
+            <li class="sim-scale-item">
+              <span class="sim-dot sim-dot-low"></span>
+              <div class="sim-scale-range">0% to {{ threshold_pct|add:"-1" }}%</div>
+              <div>
+                <p class="sim-scale-label">Low Similarity</p>
+                <p class="sim-scale-text">Mostly original content with minor overlap in topics or wording.</p>
+              </div>
+            </li>
+            <li class="sim-scale-item">
+              <span class="sim-dot sim-dot-moderate"></span>
+              <div class="sim-scale-range">{{ threshold_pct }}% to {{ high_pct|add:"-1" }}%</div>
+              <div>
+                <p class="sim-scale-label">Moderate Similarity</p>
+                <p class="sim-scale-text">Noticeable overlap. Review the matched studies and add proper citations.</p>
+              </div>
+            </li>
+            <li class="sim-scale-item">
+              <span class="sim-dot sim-dot-high"></span>
+              <div class="sim-scale-range">{{ high_pct }}% and above</div>
+              <div>
+                <p class="sim-scale-label">High Similarity</p>
+                <p class="sim-scale-text">Strong overlap with existing work.</p>
+              </div>
+            </li>
+          </ul>
+
+        </aside>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var overlay = document.getElementById('simLoading');
+
+    document.querySelectorAll('.sim-form').forEach(function (form) {
+      form.addEventListener('submit', function () {
+        // Block double submits and show the loading screen.
+        form.querySelector('button[type="submit"]').disabled = true;
+        overlay.classList.remove('d-none');
+        overlay.classList.add('d-flex');
+      });
+    });
+
+    // If the user comes back with the browser Back button, the page can be
+    // restored from cache with the overlay still showing, so reset it.
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) {
+        overlay.classList.add('d-none');
+        overlay.classList.remove('d-flex');
+        document.querySelectorAll('.sim-form button[type="submit"]').forEach(function (btn) {
+          btn.disabled = false;
+        });
+      }
+    });
+  });
+</script>
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock %}

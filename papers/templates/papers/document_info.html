@@ -1,0 +1,119 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}{{ paper.title }}{% endblock %}
+
+{% block content %}
+
+<main class="mt-100 mb-5">
+    <div class="container">
+
+        <a href="{% url 'papers:browse' %}" class="detail-back mb-4 d-inline-block">
+            <i class="bi bi-arrow-left me-1"></i> Back to Browsing
+        </a>
+
+        <div id="pdf-content">
+            <div class="row g-4">
+
+                <div class="col-lg-8">
+                    <div class="detail-main-card">
+
+                        <h1 class="h1-detail-title">
+                            {{ paper.title }}
+                        </h1>
+
+                        <div class="mb-3">
+                            <span class="detail-badge">{{ paper.get_type_display }}</span>
+                        </div>
+
+                        <p class="p-detail-section-label">ABSTRACT</p>
+
+                        <p class="p-detail-abstract">
+                            {{ paper.abstract }}
+                        </p>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="detail-side-card">
+
+                        <h6 class="h6-detail-side-title">Document Details</h6>
+
+                        <div class="detail-meta-item">
+                            <span class="detail-meta-label">Author/s</span>
+                            <span class="detail-meta-value">{{ paper.authors }}</span>
+                        </div>
+
+                        <div class="detail-meta-item">
+                            <span class="detail-meta-label">Year Published</span>
+                            <span class="detail-meta-value">{{ paper.year }}</span>
+                        </div>
+
+                        <div class="detail-meta-item">
+                            <span class="detail-meta-label">Program</span>
+                            <span class="detail-meta-value">{{ paper.program|default:"Not specified" }}</span>
+                        </div>
+
+                        <!-- Categories added here -->
+                        <div class="detail-meta-item">
+                            <span class="detail-meta-label">Categories</span>
+                            <span class="detail-meta-value">
+                                {% for category in paper.categories.all %}
+                                    {{ category.category_name }}{% if not forloop.last %}, {% endif %}
+                                {% empty %}
+                                    None
+                                {% endfor %}
+                            </span>
+                        </div>
+
+                        <div class="detail-meta-item">
+                            <span class="detail-meta-label">Paper ID</span>
+                            <span class="detail-meta-value">DOC-{{ paper.paper_id|stringformat:"03d" }}</span>
+                        </div>
+
+                        <div class="detail-meta-item">
+                            <span class="detail-meta-label">Abstract Word Count</span>
+                            <span class="detail-meta-value">{{ paper.abstract|wordcount }} words</span>
+                        </div>
+
+                        <div class="detail-meta-item mb-5">
+                            <span class="detail-meta-label">Upload Date</span>
+                            <span class="detail-meta-value">{{ paper.upload_date|date:"F Y" }}</span>
+                        </div>
+
+                        {% if user.is_staff %}
+                            {% if paper.file_path and paper.file_path|stringformat:"s" != "None" %}
+                                <a href="{% url 'papers:view_paper' paper.paper_id %}" class="btn login-btn w-100">
+                                    <i class="bi bi-eye me-2"></i>
+                                    View Document
+                                </a>
+                            {% else %}
+                                <p class="detail-meta-value text-center mb-0">
+                                    No file has been uploaded for viewing.
+                                </p>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if not user.is_staff %}
+                            <button type="button" id="download-details-btn" class="btn login-btn w-100"
+                                    data-filename="DOC-{{ paper.paper_id|stringformat:"03d" }}.pdf">
+                                <i class="bi bi-download me-2"></i>
+                                Download Document Details
+                            </button>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="{% static 'js/document_pdf.js' %}"></script>
+
+{% endblock %}

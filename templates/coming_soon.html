@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+  Coming Soon
+{% endblock %}
+
+{% block content %}
+  <main class="error-main mt-100">
+    <div class="text-center">
+      <i class="bi bi-cone-striped error-icon"></i>
+
+      <h1 class="h1-error-title">Coming Soon</h1>
+
+      <p class="p-error-sub">This feature is currently in development or maintenance. Stay tuned!</p>
+
+      <a href="{% url 'landing' %}" class="btn btn-secondary mt-3 error-btn">Go Back Home</a>
+    </div>
+  </main>
+{% endblock %}

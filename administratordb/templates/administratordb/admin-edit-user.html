@@ -1,0 +1,157 @@
+{% extends "adminlayout.html" %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h1 class="admin-title mb-1">Manage User</h1>
+    <p class="admin-welcome mb-0">
+      Currently editing:
+      <strong>{{ managed_user.user_id|stringformat:"03d" }}</strong>
+    </p>
+    <p class="admin-welcome mb-0">
+      {% if is_protected_account %}
+        This account is protected and read-only.
+      {% else %}
+        Update the account information and role below.
+      {% endif %}
+    </p>
+  </div>
+
+  <div class="d-flex align-items-center gap-2">
+    <i class="bi bi-person-circle admin-avatar"></i>
+    <span class="admin-username">{{ request.user.username }}</span>
+  </div>
+</div>
+
+<form method="post" class="d-flex flex-column" style="max-width: 600px;">
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">
+      {% for error in form.non_field_errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="form-group mb-3">
+    <label for="editUserId">User ID</label>
+    <input
+      type="text"
+      class="form-control"
+      id="editUserId"
+      value="{{ managed_user.user_id|stringformat:"03d" }}"
+      readonly>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="form-group col-md-6">
+      {% if is_protected_account %}
+        <label for="editFullName">Full Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="editFullName"
+          value="{{ managed_user.full_name }}"
+          readonly>
+      {% else %}
+        <label for="{{ form.full_name.id_for_label }}">
+          {{ form.full_name.label }}
+          <span class="text-danger">*</span>
+        </label>
+        {{ form.full_name }}
+        {% for error in form.full_name.errors %}
+          <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <div class="form-group col-md-6">
+      {% if is_protected_account %}
+        <label for="editUsername">Username</label>
+        <input
+          type="text"
+          class="form-control"
+          id="editUsername"
+          value="{{ managed_user.username }}"
+          readonly>
+      {% else %}
+        <label for="{{ form.username.id_for_label }}">
+          {{ form.username.label }}
+          <span class="text-danger">*</span>
+        </label>
+        {{ form.username }}
+        {% for error in form.username.errors %}
+          <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="form-group mb-3">
+    {% if is_protected_account %}
+      <label for="editEmail">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        id="editEmail"
+        value="{{ managed_user.email }}"
+        readonly>
+    {% else %}
+      <label for="{{ form.email.id_for_label }}">
+        {{ form.email.label }}
+        <span class="text-danger">*</span>
+      </label>
+      {{ form.email }}
+      {% for error in form.email.errors %}
+        <div class="text-danger small mt-1">{{ error }}</div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <div class="form-group mb-2">
+    {% if is_protected_account %}
+      <label for="editRole">Role</label>
+      <input
+        type="text"
+        class="form-control"
+        id="editRole"
+        value="{% if managed_user.role %}{{ managed_user.role.role_name }}{% else %}Unassigned{% endif %}"
+        readonly>
+    {% else %}
+      <label for="{{ form.role.id_for_label }}">
+        {{ form.role.label }}
+        <span class="text-danger">*</span>
+      </label>
+      {{ form.role }}
+      {% for error in form.role.errors %}
+        <div class="text-danger small mt-1">{{ error }}</div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  {% if is_protected_account %}
+    <p class="admin-role-note mb-4">
+      This staff or superuser account is protected. Its account details cannot be changed here.
+    </p>
+  {% else %}
+    <p class="admin-role-note mb-4">
+      The default role for user is Student. Assignment of Faculty as role is manually set by the administrator.
+    </p>
+  {% endif %}
+
+  <div class="d-flex gap-3">
+    <a href="{% url 'administratordb:admin_users' %}" class="btn admin-cancel-btn">Cancel</a>
+    {% if not is_protected_account %}
+      <button type="submit" class="btn admin-save-btn">Save Changes</button>
+    {% endif %}
+  </div>
+</form>
+
+{% endblock %}

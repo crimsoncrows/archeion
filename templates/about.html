@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+  About — Archeion
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/script.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+  <div class="login-main mt-50">
+    <div class="login-wrapper align-items-start">
+      <div class="login-left d-flex flex-column align-items-center justify-content-center">
+        <img src="{% static 'imgs/logo/archeion-network.png' %}" alt="Archeion network graphic" />
+        <h2 class="about-brand-name mt-2">Archeion</h2>
+        <p class="about-brand-sub">Research tool powered by SBERT.</p>
+      </div>
+
+      <div class="about-accordion-wrap">
+        <div class="accordion accordion-flush" id="aboutAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">What is Archeion?</button></h2>
+            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#aboutAccordion">
+              <div class="accordion-body">Archeion is a NLP powered web-based thesis and capstone research repository developed to address the growing need for structured, accessible, and intelligent management of academic research within the College of Computer Studies at Tarlac State University.</div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">How does Archeion work?</button></h2>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#aboutAccordion">
+              <div class="accordion-body">The platform serves as a centralized archive where students, faculty, and researchers can submit, browse, and retrieve thesis and capstone projects with ease. Archeion integrates content similarity detection powered by Sentence-BERT (SBERT) to promote academic integrity by identifying semantically similar works — and trend insights tools that surface patterns in research topics over time.</div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">What is Archeion's vision?</button></h2>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#aboutAccordion">
+              <div class="accordion-body">Archeion was built on the belief that institutional knowledge should not be siloed or lost to time. Every thesis and capstone project represents months of rigorous inquiry, and this system exists to ensure that work remains discoverable, properly attributed, and useful to the scholars who come after.</div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">Who developed Archeion?</button></h2>
+            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#aboutAccordion">
+              <div class="accordion-body">Archeion is developed by a four-person capstone team from the College of Computer Studies, Tarlac State University — Anjela, Juliana, Ashlyn, and Roxanne. Driven by a shared commitment to innovation and academic service, the team designed and engineered the system from the ground up, spanning backend architecture, semantic similarity algorithms, user interface design, and research documentation.</div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">Is Archeion open for all?</button></h2>
+            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#aboutAccordion">
+              <div class="accordion-body">Archeion is intended for use by students, faculty, and staff within the College of Computer Studies at Tarlac State University. Access is role-based, ensuring the right people have the right level of interaction with the repository.</div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">What makes Archeion different?</button></h2>
+            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#aboutAccordion">
+              <div class="accordion-body">Unlike a simple file storage system, Archeion is intelligent. It uses SBERT-powered semantic similarity detection to flag research papers that are conceptually similar — not just keyword matches — helping maintain academic integrity. Its trend insights feature also helps advisers and students identify popular and emerging research topics within CCS.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

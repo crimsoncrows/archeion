@@ -1,0 +1,52 @@
+{% extends "adminlayout.html" %}
+
+{% block title %}Add Category{% endblock %}
+
+{% block nav_research %}active{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h1 class="admin-title mb-1">Manage Categories</h1>
+    <p class="admin-welcome mb-0">
+      Add a new research category. Enter the category name below.
+    </p>
+  </div>
+
+  <div class="d-flex align-items-center gap-2">
+    <i class="bi bi-person-circle admin-avatar"></i>
+    <span class="admin-username">{{ request.user.username }}</span>
+  </div>
+</div>
+
+<form method="post" class="d-flex flex-column" style="max-width: 600px;">
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">
+      {% for error in form.non_field_errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="form-group mb-4">
+    <label for="{{ form.category_name.id_for_label }}">
+      {{ form.category_name.label }}
+      <span class="text-danger">*</span>
+    </label>
+    {{ form.category_name }}
+    {% for error in form.category_name.errors %}
+      <div class="text-danger small mt-1">{{ error }}</div>
+    {% endfor %}
+  </div>
+
+  <div class="d-flex gap-3">
+    <a href="{% url 'administratordb:admin_research_categories' %}" class="btn admin-cancel-btn">Cancel</a>
+    <button type="submit" class="btn admin-save-btn">Add Category</button>
+  </div>
+</form>
+
+{% endblock %}

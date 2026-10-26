@@ -1,0 +1,112 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}Privacy Policy — Archeion{% endblock %}
+
+{% block content %}
+<div class="login-main mt-50">
+  <div class="login-wrapper align-items-start">
+
+    <div class="tos-content">
+      <h1 class="h1-tos-title">Privacy Policy</h1>
+      <p class="p-tos-date">Effective Date: October 2026</p>
+      <p class="tos-intro">Archeion is committed to protecting the
+        privacy and personal information of all users within the
+        Tarlac State University academic community. This policy
+        outlines how user data is collected, used, and
+        safeguarded within the system, in accordance with the
+        Data Privacy Act of 2012 (RA 10173).</p>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">1.</span> Information We
+          Collect</h6>
+        <p>Upon registration, Archeion collects your full name,
+          institutional email address, and password, which is
+          stored in encrypted (hashed) form and is never visible
+          to anyone, including administrators. Archeion also keeps
+          any profile updates you make and any feedback ratings you
+          choose to submit on similarity results. No additional
+          personal data is required.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">2.</span> How We Use Your
+          Information</h6>
+        <p>Collected information is used to authenticate user
+          access, identify registered users within the system,
+          send account emails such as password reset links, and
+          improve the similarity check feature through user
+          feedback. Users may browse the research repository, view
+          trend analysis, and use the AI-powered similarity check
+          feature.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">3.</span> Similarity Check
+          Submissions</h6>
+        <p>Files and text submitted for a similarity check are
+          processed only to generate the result and are not saved
+          to the repository. Students' similarity results are
+          visible only to the student and to their professors;
+          professors can view the results but not the submitted
+          file itself.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">4.</span> Data Sharing</h6>
+        <p>Archeion does not sell, trade, or share personal user
+          information for marketing or any unrelated purpose. To
+          operate, Archeion uses third-party service providers for
+          web hosting, database, file storage, and email delivery,
+          and an AI service that receives similarity check text
+          solely to generate the feature comparison. Research
+          documents in the repository are viewable only by verified
+          TSU users for academic reference purposes.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">5.</span> Data Security</h6>
+        <p>User data is stored with secured cloud service
+          providers. Archeion uses encrypted connections, hashed
+          passwords, role-based access control, and rate limiting
+          to protect against unauthorized access, alteration, or
+          disclosure of personal information.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">6.</span> Retention</h6>
+        <p>User account data is retained for as long as the
+          account remains active or as required by TSU's
+          institutional records policies. Similarity check
+          submissions are not retained after the result is
+          generated.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">7.</span> Your Rights</h6>
+        <p>Under the Data Privacy Act of 2012, you have the right
+          to access, correct, and request the removal of your
+          personal information. You can update your profile and
+          password directly in Archeion; for other requests,
+          contact the College of Computer Studies.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">8.</span> Consent</h6>
+        <p>By registering and using Archeion, users consent to
+          the collection and use of their information as
+          described in this policy.</p>
+      </div>
+
+    </div>
+
+    <div class="login-left d-flex flex-column align-items-center justify-content-center">
+      <img src="{% static 'imgs/logo/archeion-network.png' %}" alt="Archeion network graphic">
+      <h2 class="about-brand-name mt-2">Archeion</h2>
+      <p class="about-brand-sub">Research tool powered by
+        SBERT.</p>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

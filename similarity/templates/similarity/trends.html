@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Archeion Trends{% endblock %}
+{% block body_class %}trends-body{% endblock %}
+
+{% block content %}
+<script>document.body.classList.add("trends-body");</script>
+<div class="trends-main">
+
+  <div class="trends-hero text-center">
+    <h1 class="h1-trends-title">Research Trends</h1>
+    <p class="p-trends-sub mb-0">
+      See how research output, programs, and topics at the College of Computer Studies have changed over the years.
+    </p>
+  </div>
+
+  <div class="trends-panel">
+    {% if not trends_data.yearly %}
+      <div class="trends-card text-center">
+        <p class="mb-0 text-muted">No papers in the repository yet, so there are no trends to show.</p>
+      </div>
+    {% else %}
+
+      <div class="row g-4">
+        <div class="col-lg-7 d-flex">
+          <div class="trends-card">
+            <h5 class="trends-card-title">Yearly Research Output</h5>
+            <p class="trends-card-sub">Theses and capstones published per year</p>
+            <div class="trends-chart-wrap"><canvas id="yearlyOutputChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="col-lg-5 d-flex">
+          <div class="trends-card">
+            <h5 class="trends-card-title">Research Distribution</h5>
+            <p class="trends-card-sub">Share of papers by program</p>
+            <div class="trends-chart-wrap-pie"><canvas id="researchDistributionChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="trends-card">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+              <div>
+                <h5 class="trends-card-title">Topic Heat Map</h5>
+                <p class="trends-card-sub mb-0">Topics by year</p>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="heatmap-legend-label">Fewer</span>
+                <span class="heatmap-swatch heatmap-swatch-1"></span>
+                <span class="heatmap-swatch heatmap-swatch-2"></span>
+                <span class="heatmap-swatch heatmap-swatch-3"></span>
+                <span class="heatmap-swatch heatmap-swatch-4"></span>
+                <span class="heatmap-swatch heatmap-swatch-5"></span>
+                <span class="heatmap-legend-label">More</span>
+              </div>
+            </div>
+            <div class="heatmap-scroll">
+              <div id="heatmapGrid" class="heatmap-grid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{ trends_data|json_script:"trends-data" }}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<script src="{% static 'js/trends.js' %}"></script>
+{% endblock %}

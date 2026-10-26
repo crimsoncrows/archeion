@@ -1,0 +1,231 @@
+{% extends "adminlayout.html" %}
+
+{% block title %}View Papers{% endblock %}
+
+{% block nav_research %}active{% endblock %}
+
+{% block content %}
+
+<style>
+  .pending-label {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #c2410c;
+  }
+</style>
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <h1 class="admin-title mb-0">Manage Research</h1>
+
+  <div class="d-flex align-items-center gap-2">
+    <i class="bi bi-person-circle admin-avatar"></i>
+    <span class="admin-username">{{ request.user.username }}</span>
+  </div>
+</div>
+
+<!-- Stat cards -->
+<div class="d-flex gap-3 mb-4 flex-wrap">
+  <div
+    class="admin-stat-card admin-stat-orange admin-stat-row"
+    style="min-width: 180px; flex: 1;">
+    <div>
+      <div class="admin-stat-number">{{ total_papers }}</div>
+      <div class="admin-stat-label">Total Research Papers</div>
+    </div>
+  </div>
+
+  <div
+    class="admin-stat-card admin-stat-row"
+    style="background-color: #f0896a; min-width: 140px; flex: 1;">
+    <div>
+      <div class="admin-stat-number">{{ capstone_count }}</div>
+      <div class="admin-stat-label">Capstone</div>
+    </div>
+  </div>
+
+  <div
+    class="admin-stat-card admin-stat-light admin-stat-row"
+    style="min-width: 140px; flex: 1;">
+    <div>
+      <div class="admin-stat-number" style="color: #bf480d;">
+        {{ thesis_count }}
+      </div>
+      <div class="admin-stat-label" style="color: #bf480d;">
+        Thesis
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="admin-stat-card admin-stat-light admin-stat-row"
+    style="min-width: 140px; flex: 1;"
+    title="Papers without an embedding. Run embed_pending to include them in similarity and Trends.">
+    <div>
+      <div class="admin-stat-number" style="color: #bf480d;">
+        {{ pending_count }}
+      </div>
+      <div class="admin-stat-label" style="color: #bf480d;">
+        Not Processed
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Search and type filter -->
+<form method="get" class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+  <input
+    type="text"
+    name="q"
+    value="{{ q }}"
+    class="form-control admin-search-input"
+    placeholder="Search research papers..."
+    aria-label="Search research papers"
+    style="max-width: 280px;">
+
+  <label class="visually-hidden" for="paper-type-filter">
+    Research paper type
+  </label>
+  <select
+    id="paper-type-filter"
+    name="type"
+    class="form-select admin-filter-btn"
+    style="max-width: 180px;">
+    <option value="all"{% if selected_type == 'all' %} selected{% endif %}>
+      All Types
+    </option>
+    <option value="capstone"{% if selected_type == 'capstone' %} selected{% endif %}>
+      Capstone
+    </option>
+    <option value="thesis"{% if selected_type == 'thesis' %} selected{% endif %}>
+      Thesis
+    </option>
+  </select>
+
+  <button class="btn admin-search-btn" type="submit">
+    <i class="bi bi-search me-1"></i>
+    Search
+  </button>
+
+  <div class="ms-auto">
+    <a
+      href="{% url 'administratordb:admin_add_research_paper' %}"
+      class="btn admin-add-btn">
+      <i class="bi bi-plus-circle me-1"></i>
+      Add Research Paper
+    </a>
+  </div>
+</form>
+
+<!-- Papers table -->
+<div class="admin-table-card mb-3">
+  <div class="table-responsive">
+    <table class="table admin-table mb-0">
+      <thead>
+        <tr>
+          <th>Paper ID</th>
+          <th>Title</th>
+          <th>Abstract</th>
+          <th>Authors</th>
+          <th>Year</th>
+          <th>Type</th>
+          <th>Program</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for paper in papers %}
+          <tr>
+            <td>DOC-{{ paper.paper_id|stringformat:"03d" }}</td>
+
+            <td title="{{ paper.title }}">
+              <div class="truncate-dynamic">{{ paper.title }}</div>
+              {% if not paper.is_processed %}
+                <span
+                  class="pending-label"
+                  title="Run embed_pending to include this paper in similarity and Trends">
+                  Not processed
+                </span>
+              {% endif %}
+            </td>
+
+            <td title="{{ paper.abstract }}">
+              <div class="truncate-dynamic">{{ paper.abstract }}</div>
+            </td>
+
+            <td title="{{ paper.authors }}">
+              <div class="truncate-dynamic">{{ paper.authors }}</div>
+            </td>
+
+            <td>{{ paper.year }}</td>
+            <td>{{ paper.get_type_display }}</td>
+
+            <td title="{{ paper.program }}">
+              <div class="truncate-dynamic">{{ paper.program }}</div>
+            </td>
+
+            <td>
+
+               <a href="{% url 'papers:document_info' paper.paper_id %}"
+
+                                   class="admin-view-link" target="_blank">
+                                    View Paper
+                                </a>
+
+
+              <div class="d-flex align-items-center gap-2">
+                <a
+                  href="{% url 'administratordb:admin_edit_research_paper' paper.paper_id %}"
+                  class="admin-edit-link">
+                  Edit
+                </a>
+                <a
+                  href="{% url 'administratordb:admin_delete_research_paper' paper.paper_id %}"
+                  class="admin-delete-link">
+                  Delete
+                </a>
+
+            
+
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8" class="text-center py-5 text-muted">
+              No research papers found.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Pagination -->
+<div class="d-flex justify-content-center align-items-center gap-3">
+  {% if papers.has_previous %}
+    <a
+      class="btn admin-filter-btn"
+      href="?q={{ q|urlencode }}&amp;type={{ selected_type }}&amp;page={{ papers.previous_page_number }}">
+      Previous
+    </a>
+  {% endif %}
+
+  <span class="admin-pagination-label">
+    Page {{ papers.number }} of {{ papers.paginator.num_pages }}
+  </span>
+
+  {% if papers.has_next %}
+    <a
+      class="btn admin-filter-btn"
+      href="?q={{ q|urlencode }}&amp;type={{ selected_type }}&amp;page={{ papers.next_page_number }}">
+      Next
+    </a>
+  {% endif %}
+</div>
+
+{% endblock %}

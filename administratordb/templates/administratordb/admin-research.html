@@ -1,0 +1,89 @@
+{% extends "adminlayout.html" %}
+
+{% block title %}Manage Research{% endblock %}
+
+{% block content %}
+
+<main class="admin-main">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+
+        <div>
+            <h1 class="admin-title mb-1">Manage Research</h1>
+            <p class="admin-research-sub mb-0">Manage the papers and categories in the Archeion repository.</p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-person-circle admin-avatar"></i>
+            <span class="admin-username">{{ request.user.username }}</span>
+        </div>
+
+    </div>
+
+    <!-- Quick stats (only shows if the view passes these values) -->
+    {% if paper_count is not None or category_count is not None %}
+    <div class="d-flex flex-wrap gap-3 mb-4">
+        {% if paper_count is not None %}
+        <div class="admin-research-stat">
+            <i class="bi bi-journal-text"></i>
+            <div>
+                <div class="admin-research-stat-number">{{ paper_count }}</div>
+                <div class="admin-research-stat-label">Research papers</div>
+            </div>
+        </div>
+        {% endif %}
+        {% if category_count is not None %}
+        <div class="admin-research-stat">
+            <i class="bi bi-tags"></i>
+            <div>
+                <div class="admin-research-stat-number">{{ category_count }}</div>
+                <div class="admin-research-stat-label">Categories</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Navigation -->
+
+    <div class="row g-3">
+
+        <div class="col-12 col-md-6 col-xl-4">
+            <a href="{% url 'administratordb:admin_research_papers' %}" class="admin-research-card">
+                <span class="admin-research-icon"><i class="bi bi-file-earmark-text-fill"></i></span>
+                <span class="admin-research-text">
+                    <span class="admin-research-title">View Papers</span>
+                    <span class="admin-research-desc">Browse, search, add, and delete research papers.</span>
+                </span>
+                <i class="bi bi-arrow-right admin-research-arrow"></i>
+            </a>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-4">
+            <a href="{% url 'administratordb:admin_research_papers' %}" class="admin-research-card">
+                <span class="admin-research-icon"><i class="bi bi-pencil-square"></i></span>
+                <span class="admin-research-text">
+                    <span class="admin-research-title">Edit Research Paper</span>
+                    <span class="admin-research-desc">Pick a paper from the list to update its details.</span>
+                </span>
+                <i class="bi bi-arrow-right admin-research-arrow"></i>
+            </a>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-4">
+            <a href="{% url 'administratordb:admin_research_categories' %}" class="admin-research-card">
+                <span class="admin-research-icon"><i class="bi bi-tags-fill"></i></span>
+                <span class="admin-research-text">
+                    <span class="admin-research-title">View Categories</span>
+                    <span class="admin-research-desc">See the categories papers are grouped under.</span>
+                </span>
+                <i class="bi bi-arrow-right admin-research-arrow"></i>
+            </a>
+        </div>
+
+    </div>
+
+</main>
+
+{% endblock %}

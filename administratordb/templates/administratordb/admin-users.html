@@ -1,0 +1,273 @@
+{% extends "adminlayout.html" %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+
+<main class="admin-main">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <h1 class="admin-title mb-0">Manage Users</h1>
+
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-person-circle admin-avatar"></i>
+            <span class="admin-username">{{ request.user.username }}</span>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="d-flex gap-3 mb-4 flex-wrap">
+
+        <div class="admin-stat-card admin-stat-orange admin-stat-row"
+             style="min-width:200px; flex:1;">
+            <div>
+                <div class="admin-stat-number">{{ total_users }}</div>
+                <div class="admin-stat-label">
+                    Total Registered Users
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-stat-card admin-stat-row"
+             style="background:#f0896a; min-width:160px; flex:1;">
+            <div>
+                <div class="admin-stat-number">{{ student_count }}</div>
+                <div class="admin-stat-label">Student Users</div>
+            </div>
+        </div>
+
+        <div class="admin-stat-card admin-stat-light admin-stat-row"
+             style="min-width:160px; flex:1;">
+            <div>
+                <div class="admin-stat-number" style="color:#bf480d;">
+                    {{ faculty_count }}
+                </div>
+
+                <div class="admin-stat-label" style="color:#bf480d;">
+                    Faculty Users
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Search -->
+    <form method="get" class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+
+        <input
+            type="text"
+            name="q"
+            value="{{ q }}"
+            class="form-control admin-search-input"
+            placeholder="Search for a user..."
+            aria-label="Search users"
+            style="max-width:280px;">
+
+        <select
+            name="role"
+            class="form-select admin-filter-btn"
+            aria-label="Filter users by role"
+            style="width:110px; min-width:110px; padding-right:2.5rem;">
+            <option value=""{% if not selected_role %} selected{% endif %}>
+                All
+            </option>
+            <option value="Student"{% if selected_role == 'Student' %} selected{% endif %}>
+                Student
+            </option>
+            <option value="Faculty"{% if selected_role == 'Faculty' %} selected{% endif %}>
+                Faculty
+            </option>
+            <option value="Admin"{% if selected_role == 'Admin' %} selected{% endif %}>
+                Admin
+            </option>
+        </select>
+
+        <button class="btn admin-search-btn" type="submit">
+            <i class="bi bi-search me-1"></i>
+            Search
+        </button>
+
+        <div class="ms-auto">
+            <a
+                href="{% url 'administratordb:admin_add_user' %}"
+                class="btn admin-add-btn">
+                <i class="bi bi-plus-circle me-1"></i>
+                Add User
+            </a>
+        </div>
+
+    </form>
+
+    <!-- Users -->
+    <div class="admin-table-card mb-4">
+
+        <div class="table-responsive">
+
+            <table class="table admin-table mb-0">
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for user in users %}
+
+                    <tr>
+
+                        <td>{{ user.user_id }}</td>
+
+                        <td title="{{ user.full_name }}">
+                            <div class="truncate-dynamic">{{ user.full_name }}</div>
+                        </td>
+
+                        <td title="{{ user.username }}">
+                            <div class="truncate-dynamic">{{ user.username }}</div>
+                        </td>
+
+                        <td title="{{ user.email }}">
+                            <div class="truncate-dynamic">{{ user.email }}</div>
+                        </td>
+
+                        <td>
+                            {% if user.role %}
+                                {{ user.role.role_name }}
+                            {% else %}
+                                <span class="text-muted">Unassigned</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if user.is_active %}
+                                <span class="badge text-bg-success">Active</span>
+                            {% else %}
+                                <span class="badge text-bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a
+                                href="{% url 'administratordb:admin_edit_user' user.user_id %}"
+                                class="admin-edit-link">
+                                Edit
+                            </a>
+                            {% if user.is_active and not user.is_staff and not user.is_superuser %}
+                                {% if user.role %}
+                                    {% if user.role.role_name == 'Student' or user.role.role_name == 'Faculty' %}
+                                        <a
+                                            href="{% url 'administratordb:admin_deactivate_user' user.user_id %}"
+                                            class="admin-delete-link ms-2">
+                                            Deactivate
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="7"
+                            class="text-center py-5 text-muted">
+
+                            No registered users found.
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center gap-3 mt-3">
+            {% if users.has_previous %}
+                <a
+                    class="btn admin-filter-btn"
+                    href="?q={{ q|urlencode }}&amp;role={{ selected_role|urlencode }}&amp;page={{ users.previous_page_number }}">
+                    Previous
+                </a>
+            {% endif %}
+
+            <span class="admin-pagination-label">
+                Page {{ users.number }} of {{ users.paginator.num_pages }}
+            </span>
+
+            {% if users.has_next %}
+                <a
+                    class="btn admin-filter-btn"
+                    href="?q={{ q|urlencode }}&amp;role={{ selected_role|urlencode }}&amp;page={{ users.next_page_number }}">
+                    Next
+                </a>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- Roles -->
+    <h2 class="admin-title mb-3">Roles</h2>
+
+    <div class="admin-table-card">
+
+        <div class="table-responsive">
+
+            <table class="table admin-table mb-0">
+
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Users</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for role in roles %}
+
+                    <tr>
+
+                        <td>{{ role.role_name }}</td>
+
+                        <td>{{ role.user_set.count }}</td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="2" class="text-center text-muted">
+                            No roles found.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</main>
+
+{% endblock %}

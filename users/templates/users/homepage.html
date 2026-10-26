@@ -1,0 +1,152 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Homepage{% endblock %}
+
+{% block content %}
+
+<main class="homepage-main">
+
+    <div class="greeting">
+        <h1 class="greeting-homepage">
+            Hello,
+            <span class="greeting-homepage-span">
+                {{ request.user.username }}!
+            </span>
+        </h1>
+
+        <p class="p-landing">
+            Your research tool is here. What would you like to do today?
+        </p>
+    </div>
+
+    <!-- STATS -->
+    <section class="d-flex flex-column flex-lg-row gap-3 justify-content-center">
+
+        <div class="stat-card1">
+            <div>
+                <span class="stat-number">{{ paper_count }}</span>
+            </div>
+
+            <span class="stat-label">
+                Total research in repository
+            </span>
+        </div>
+
+        <div class="stat-card2">
+
+            <img src="{% static 'imgs/logo/archeion-fire.png' %}"
+                 class="cta-fire-img"
+                 alt="Fire">
+
+            <h2 class="cta-headline">
+                Check <span class="cta-headline-span">new</span>
+            </h2>
+
+            <p class="cta-headline-sub">
+                Trending topics
+            </p>
+
+            <a href="{% url 'similarity:trends' %}" class="cta-btn border-0 text-decoration-none" aria-label="View trending topics">
+                <i class="bi bi-arrow-right"></i>
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- RESEARCH OF THE DAY -->
+    {% if papers_of_the_day %}
+    <section class="container mt-5">
+        <div class="d-flex justify-content-between align-items-end mb-3">
+            <div>
+                <h2 class="potd-heading mb-0">Research of the Day</h2>
+                <p class="p-landing mb-0">A fresh pick from the repository, updated daily.</p>
+            </div>
+            <a href="{% url 'papers:browse' %}" class="potd-link">
+                Browse all <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="row g-3">
+            {% for paper in papers_of_the_day %}
+            <div class="col-12 col-md-4">
+                <a href="{% url 'papers:document_info' paper.paper_id %}"
+                   class="text-decoration-none text-reset">
+                    <div class="card h-100 potd-card">
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge browse-badge-{{ paper.type }} align-self-start mb-2">
+                                {{ paper.get_type_display }}
+                            </span>
+                            <h5 class="potd-title">{{ paper.title }}</h5>
+                            <p class="potd-abstract">{{ paper.abstract|truncatewords:25 }}</p>
+                            <p class="potd-authors mt-auto mb-0">{{ paper.authors }}</p>
+                        </div>
+                        <div class="card-footer potd-footer d-flex justify-content-between">
+                            <span>{{ paper.year }}</span>
+                            <span class="browse-result-program">{{ paper.program }}</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+
+    <section class="prep-card">
+  <h2 class="prep-title">Preparing your capstone or thesis with Archeion</h2>
+  <p class="prep-lead">
+    Before you propose a title, use Archeion to see what has already been done
+    at the College of Computer Studies and where your idea fits.
+  </p>
+
+  <div class="prep-steps">
+    <div class="prep-step">
+      <span class="prep-num">01</span>
+      <h3 class="prep-step-title">Browse past research</h3>
+      <p class="prep-step-text">Read the theses and capstones in the repository to learn what earlier groups built and how they approached it.</p>
+    </div>
+    <div class="prep-step">
+      <span class="prep-num">02</span>
+      <h3 class="prep-step-title">Check the trends</h3>
+      <p class="prep-step-text">See which topics are crowded and which are underexplored, so you can choose a direction with room to contribute.</p>
+    </div>
+    <div class="prep-step">
+      <span class="prep-num">03</span>
+      <h3 class="prep-step-title">Run a similarity check</h3>
+      <p class="prep-step-text">Compare your title, abstract, or full paper against existing work. Your submitted file is not saved.</p>
+    </div>
+    <div class="prep-step">
+      <span class="prep-num">04</span>
+      <h3 class="prep-step-title">Refine your proposal</h3>
+      <p class="prep-step-text">Use the results to sharpen what makes your study different before presenting it to your adviser.</p>
+    </div>
+  </div>
+</section>
+
+
+    <!-- SEARCH -->
+    <section class="search">
+
+        <p class="p-landing-hero" style="padding-top: 35px;">
+            Looking for something specific? Try the classic keyword search.
+        </p>
+
+        <form method="get" action="{% url 'papers:browse' %}" class="mt-3">
+            <div class="d-flex gap-2 justify-content-center">
+                <input type="text" name="q" class="form-control browse-search"
+                       placeholder="Search papers..." style="max-width: 320px;">
+
+                <button class="btn btn-dark browse-btn-search" type="submit">
+                    <i class="bi bi-search me-1"></i> Search
+                </button>
+            </div>
+        </form>
+
+    </section>
+
+</main>
+
+{% endblock %}

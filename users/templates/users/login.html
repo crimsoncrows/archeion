@@ -1,0 +1,102 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<main class="login-main mt-50">
+    <div class="login-wrapper">
+
+        <div class="login-left">
+            <img src="{% static 'imgs/logo/archeion-network.png' %}" alt="Network graphic">
+        </div>
+
+        <div class="login-card">
+
+            <div class="login-greet mb-4">
+                <h1 class="h1-login">Login</h1>
+
+                <p class="p-login-sub">
+                    Welcome back! Good to see you again.
+                </p>
+
+                {% if form.non_field_errors %}
+                <div class="alert {% if deactivated %}alert-warning{% else %}alert-danger{% endif %} login-alert" id="loginError" role="alert">
+                    <i class="bi {% if deactivated %}bi-person-slash{% else %}bi-exclamation-circle-fill{% endif %} me-2"></i>
+                    {% for error in form.non_field_errors %}
+                        {{ error }}{% if not forloop.last %}<br>{% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} login-alert" role="alert">
+                        <i class="bi bi-exclamation-circle-fill me-2"></i>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <form class="d-flex flex-column" method="POST">
+                {% csrf_token %}
+
+                {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                {% endif %}
+
+                <div class="form-group mb-3">
+                    <label for="username">Username</label>
+
+                    <input
+                        type="text"
+                        class="form-control{% if form.username.errors %} is-invalid{% endif %}"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your username"
+                        value="{{ request.POST.username|default:'' }}">
+                </div>
+
+                <div class="form-group mb-2">
+                    <label for="password">Password</label>
+
+                    <div class="input-group">
+                        <input
+                            type="password"
+                            class="form-control{% if form.password.errors %} is-invalid{% endif %}"
+                            id="password"
+                            name="password"
+                            placeholder="Password">
+
+                        <span
+                            class="input-group-text bg-white border-start-0 toggle-pass"
+                            data-toggle-pass="password">
+                            <i class="bi bi-eye"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <a href="{% url 'users:password_reset' %}" class="forgot-pass text-center mt-2 mb-3">
+                    Forgot password
+                </a>
+
+                <button type="submit" class="btn login-btn">
+                    Sign In
+                </button>
+
+                <p class="signup-text text-center mt-3">
+                    Don't have an account?
+                    <a href="{% url 'users:signup' %}" class="signup-link">Sign up</a>
+                </p>
+
+            </form>
+
+        </div>
+
+    </div>
+</main>
+
+{% endblock %}
+

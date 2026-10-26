@@ -1,0 +1,29 @@
+{% load static %}
+
+{% block title %}403 - Access Denied{% endblock %}
+
+{% block content %}
+<main class="error-main mt-100">
+    <div class="text-center">
+        <i class="bi bi-exclamation-diamond-fill error-icon"></i>
+
+        <h1 class="h1-error-title">Access Denied</h1>
+
+        <p class="p-error-sub">
+            You do not have authorization rights to access this page.
+        </p>
+
+        <p class="p-error-code">
+            Error Code : 403
+        </p>
+
+        <a href="{% url 'landing' %}" class="btn btn-secondary mt-3 error-btn">
+            Go Back Home
+        </a>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}Terms of Service — Archeion{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/script.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="login-main mt-50">
+  <div class="login-wrapper align-items-start">
+
+    <div class="tos-content">
+      <h1 class="h1-tos-title">Terms of Service</h1>
+      <p class="p-tos-date">Effective Date: October 2026</p>
+      <p class="tos-intro">By accessing and using the Archeion Research
+        Repository, you agree to be bound by the following terms and
+        conditions. These terms apply to all users of the system, including
+        students, faculty, and staff of Tarlac State University.</p>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">1.</span>
+          Account Management</h6>
+        <p>Archeion is built for the TSU academic community. Access is
+          available to registered TSU students, faculty, and staff. Please
+          use your own account credentials; sharing or borrowing someone
+          else's login isn't permitted, as it helps us keep everyone's
+          research and data secure. You are responsible for keeping your
+          password confidential and for keeping the email address on your
+          account current, since password resets are sent to that address.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">2.</span>
+          Academic Integrity</h6>
+        <p>Archeion employs content similarity detection technology to
+          uphold academic integrity. Any attempt to manipulate,
+          misrepresent, or circumvent this system constitutes a violation
+          of TSU's academic policies and may be subject to disciplinary
+          action.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">3.</span>
+          Similarity Checks</h6>
+        <p>Files and text submitted for a similarity check are processed
+          only to generate the result and are not saved to the repository.
+          Students' similarity results are visible only to the student and
+          to their professors; professors can view the results but not the
+          submitted file itself. Similarity scores and the generated feature
+          comparison are automated, advisory aids — they do not by themselves
+          establish plagiarism or originality, and final academic judgment
+          rests with faculty.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">4.</span>
+          Acceptable Use</h6>
+        <p>Users agree to use the platform solely for legitimate academic
+          research and reference purposes. Reproduction, redistribution, or
+          commercial use of any content within the repository without proper
+          attribution and authorization is prohibited. Uploads are limited
+          to 10 MB per file, and automated, excessive, or abusive requests
+          may be rate-limited or blocked.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">5.</span>
+          System Access</h6>
+        <p>The Archeion development team and college administration reserve
+          the right to suspend or revoke access to any user found to be in
+          violation of these terms or engaging in conduct detrimental to the
+          integrity of the repository.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">6.</span>
+          Modifications</h6>
+        <p>These terms may be updated periodically. Continued use of the
+          system following any changes constitutes acceptance of the revised
+          terms. Users are encouraged to review this page regularly.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">7.</span>
+          Data &amp; Privacy</h6>
+        <p>Archeion collects only the information necessary for account
+          management and repository operations, along with any feedback you
+          choose to submit. To operate, Archeion relies on third-party
+          service providers for hosting, database, file storage, email
+          delivery, and AI-assisted analysis; text submitted for a
+          similarity check may be sent to an AI service solely to generate
+          the feature comparison. Archeion does not sell user data or share
+          it for any other purpose. All data is handled in accordance with
+          the Data Privacy Act of 2012 (RA 10173) and TSU's data privacy
+          policies.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">8.</span>
+          Intellectual Property</h6>
+        <p>All research papers submitted to Archeion remain the intellectual
+          property of their respective authors. Submission to the repository
+          grants Archeion a non-exclusive license to store, display, and
+          index the work for academic purposes within TSU.</p>
+      </div>
+
+      <div class="tos-item">
+        <h6 class="tos-item-heading"><span class="tos-num">9.</span>
+          Contact</h6>
+        <p>For questions or concerns regarding these terms, please reach out
+          to the College of Computer Studies administration at Tarlac State
+          University.</p>
+      </div>
+    </div>
+
+    <div class="login-left d-flex flex-column align-items-center justify-content-center">
+      <img src="{% static 'imgs/logo/archeion-network.png' %}" alt="Archeion network graphic">
+      <h2 class="about-brand-name mt-2">Archeion</h2>
+      <p class="about-brand-sub">Research tool powered by SBERT.</p>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

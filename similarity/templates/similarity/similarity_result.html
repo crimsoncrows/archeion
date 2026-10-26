@@ -1,0 +1,293 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+  Archeion - Similarity Check
+{% endblock %}
+
+{% block content %}
+  {% if messages %}
+    <div class="toast-container position-fixed top-0 end-0 p-3 sim-toast-container">
+      {% for message in messages %}
+        <div class="toast feedback-toast align-items-center text-white border-0 {% if message.tags == 'success' %}bg-dark{% elif message.tags == 'error' %}bg-danger{% else %}bg-secondary{% endif %}"
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              {% if message.tags == 'success' %}
+                <i class="bi bi-check-circle-fill me-2"></i>
+              {% elif message.tags == 'error' %}
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
+              {% else %}
+                <i class="bi bi-info-circle-fill me-2"></i>
+              {% endif %}
+              {{ message }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% with top=overall %}
+    {% with pct=top.percent|default:0 %}
+      <main class="mt-100 mb-5">
+        <div class="sim-results-main">
+          <div class="text-center mb-4">
+            <h1 class="h1-sim-title">Similarity Analysis</h1>
+            <p class="p-sim-sub">Check content similarity using the analysis tool. Similarity is measured by meaning using vector embeddings.</p>
+          </div>
+
+          <div class="sim-summary">
+            <!-- Score -->
+            <section class="sim-panel sim-score">
+              <div class="sim-ring sim-ring-{{ top.band|lower|default:'none' }}">
+                <svg viewBox="0 0 120 120" aria-hidden="true">
+                  <circle class="sim-ring-track" cx="60" cy="60" r="50" pathLength="100"></circle>
+                  <circle class="sim-ring-value" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="{{ pct }} 100"></circle>
+                </svg>
+                <span class="sim-ring-pct">{{ pct }}%</span>
+              </div>
+
+              <div class="sim-score-body">
+                <p class="sim-verdict">
+                  {% if top %}
+                    {{ top.band }} Similarity
+                  {% else %}
+                    No Matches
+                  {% endif %}
+                </p>
+                <dl class="sim-meta">
+                  <dt>Sources Found</dt><dd>{{ results|length }}</dd>
+                  <dt>Checked on</dt><dd>{% now 'm/d/Y' %}</dd>
+                  {% if file_name %}
+                    <dt>File Analyzed</dt><dd>{{ file_name }}</dd>
+                  {% endif %}
+                </dl>
+              </div>
+            </section>
+
+            <!-- Scale + actions -->
+            <section class="sim-panel">
+              <p class="sim-panel-title">Similarity Scale</p>
+              <ul class="sim-scale-list">
+                <li class="sim-scale-row">
+                  <span class="sim-dot sim-dot-low"></span>
+                  <span class="sim-scale-range">0% to {{ threshold_pct|add:'-1' }}%</span>
+                  <span>Low Similarity</span>
+                </li>
+                <li class="sim-scale-row">
+                  <span class="sim-dot sim-dot-moderate"></span>
+                  <span class="sim-scale-range">{{ threshold_pct }}% to {{ high_pct|add:'-1' }}%</span>
+                  <span>Moderate Similarity</span>
+                </li>
+                <li class="sim-scale-row">
+                  <span class="sim-dot sim-dot-high"></span>
+                  <span class="sim-scale-range">{{ high_pct }}% and above</span>
+                  <span>High Similarity</span>
+                </li>
+              </ul>
+
+              <div class="sim-actions" data-html2canvas-ignore>
+                <a href="{% url 'similarity:sbert' %}" class="btn btn-success text-white">Analyze again</a>
+                <button type="button" id="downloadReport" class="btn btn-secondary">Download Report</button>
+              </div>
+            </section>
+          </div>
+
+          <!-- Notice -->
+          <div class="alert bg-dark text-white fw-semibold border-0 rounded-3 my-3" role="alert">
+            {% if not top %}
+              No studies in the repository passed the similarity threshold. Your topic appears distinct from the existing studies.
+            {% elif top.band|lower == 'high' %}
+              Strong overlap with existing work. Review the matched studies below before proceeding with your topic.
+            {% else %}
+              Noticeable overlap with existing work. Review the matched studies below and add proper citations.
+            {% endif %}
+          </div>
+
+          <!-- Matching sources -->
+          {% if results %}
+            <section class="sim-panel sim-sources">
+              <p class="sim-panel-title mb-0">Matching Sources</p>
+              <p class="sim-sources-sub">Studies in the repository similar to your input, ranked by semantic similarity.</p>
+
+              {% for r in results %}
+                <a class="sim-source" href="{% url 'papers:document_info' r.paper_id %}">
+                  <div class="d-flex align-items-center gap-3 flex-grow-1">
+                    <div class="browse-result-icon">
+                      {% if r.program == 'IT-WMA' %}
+                        <i class="bi bi-globe2"></i>
+                      {% elif r.program == 'IT-TSM' %}
+                        <i class="bi bi-tools"></i>
+                      {% elif r.program == 'IT-NA' %}
+                        <i class="bi bi-diagram-3"></i>
+                      {% elif r.program == 'CS' %}
+                        <i class="bi bi-code-slash"></i>
+                      {% elif r.program == 'IS' %}
+                        <i class="bi bi-graph-up-arrow"></i>
+                      {% else %}
+                        <i class="bi bi-file-earmark-text"></i>
+                      {% endif %}
+                    </div>
+
+                    <div class="sim-source-body">
+                      <p class="sim-source-title">{{ r.title }}</p>
+                      <p class="sim-source-meta">
+                        {% if r.program %}
+                          <span class="browse-result-program">{{ r.program }}</span>
+                        {% endif %}
+                        {% if r.program and r.year %}
+                          <span class="sim-sep">•</span>
+                        {% endif %}
+                        {% if r.year %}{{ r.year }}{% endif %}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="sim-source-score">
+                    <progress class="sim-bar sim-bar-{{ r.band|lower }}" max="100" value="{{ r.percent }}">{{ r.percent }}%</progress>
+                    <span class="sim-source-pct">{{ r.percent }}%</span>
+                  </div>
+                </a>
+              {% endfor %}
+            </section>
+          {% endif %}
+
+          {% include 'similarity/_ffm.html' %}
+
+          <!-- Explanation -->
+          <section class="detail-main-card mt-3">
+            <p class="p-detail-section-label mt-0">UNDERSTANDING YOUR RESULTS</p>
+            <p class="p-detail-abstract">The score shows how close your input is in meaning to studies in the repository, not how much text was copied. Archeion converts both texts into vector embeddings and compares them, so studies can match even when they use different words. Only studies scoring {{ threshold_pct }}% or higher are listed. {{ threshold_pct }}% to {{ high_pct|add:'-1' }}% is Moderate, meaning you should review and cite the match. {{ high_pct }}% and above is High, meaning your topic strongly overlaps with existing work. A high score is not plagiarism. It means a similar study already exists, so open it, see what it covers, and consider narrowing your scope or adding something it lacks. Results only cover studies stored in Archeion, and scanned PDFs may extract poorly, so pasting the text directly can give a better result.</p>
+            <p class="p-detail-abstract mb-0">The comparison matrix places your input side by side with the matched studies, showing where they overlap and where your work differs. It is generated by AI once per check from your text and the matched studies' records, so use it as a starting point for your review, not a final judgment. Always confirm its points against the actual studies. If there are no matches or the matrix could not be generated, only the similarity scores are shown.</p>
+          </section>
+
+          <!-- Signatories form (excluded from the PDF) -->
+          <section class="sim-panel mt-3" data-html2canvas-ignore>
+            <p class="sim-panel-title mb-0">Signatories</p>
+            <p class="sim-sources-sub">Names typed here appear on the downloaded report above blank lines for handwritten signatures. They are not saved.</p>
+            <div class="row g-2">
+              {% for i in "1234" %}
+                <div class="col-12 col-md-6">
+                  <input type="text"
+                         class="form-control sig-input"
+                         data-sig="researcher{{ i }}"
+                         placeholder="Researcher {{ i }} full name"
+                         maxlength="80"
+                         autocomplete="off">
+                </div>
+              {% endfor %}
+              <div class="col-12">
+                <input type="text"
+                       class="form-control sig-input"
+                       data-sig="adviser"
+                       placeholder="Technical Adviser full name"
+                       maxlength="80"
+                       autocomplete="off">
+              </div>
+            </div>
+          </section>
+
+          <div class="html2pdf__page-break"></div>
+
+          <!-- Signature block (included in the PDF) -->
+          <section class="sim-signatures mt-4">
+            <p class="sim-sig-label">Prepared by:</p>
+            <div class="sim-sig-grid">
+              {% for i in "1234" %}
+                <div class="sim-sig">
+                  <div class="sim-sig-line"></div>
+                  <p class="sim-sig-name" data-sig-out="researcher{{ i }}">&nbsp;</p>
+                  <p class="sim-sig-role">Researcher</p>
+                </div>
+              {% endfor %}
+            </div>
+
+            <p class="sim-sig-label mt-4">Noted by:</p>
+            <div class="sim-sig sim-sig-adviser">
+              <div class="sim-sig-line"></div>
+              <p class="sim-sig-name" data-sig-out="adviser">&nbsp;</p>
+              <p class="sim-sig-role">Technical Adviser</p>
+            </div>
+          </section>
+        </div>
+      </main>
+    {% endwith %}
+  {% endwith %}
+
+  {% if is_owner and userInputCount == 0 %}
+    <div class="feedback-card mt-5 mb-5 mx-auto sim-feedback">
+      <p class="p-feedback-sub text-center">What are your thoughts? We would love to hear it.</p>
+
+      <form method="POST" class="form-control pb-2">
+        {% csrf_token %}
+
+        <div class="star-rating mb-3 text-center" id="star-rating">
+          {% for i in "12345" %}
+            <i class="bi bi-star star{% if feedback_form.rating.errors %} is-invalid{% endif %}" data-value="{{ i }}"></i>
+          {% endfor %}
+          {{ feedback_form.rating }}
+          {% if feedback_form.rating.errors %}
+            <div class="invalid-feedback d-block text-center">{{ feedback_form.rating.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        {% if feedback_form.non_field_errors %}
+          <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            {% for error in feedback_form.non_field_errors %}
+              {{ error }}{% if not forloop.last %}<br />{% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="form-group mb-3">{{ feedback_form.message }}</div>
+
+        <button type="submit" class="btn feedback-btn btn-secondary w-50 mx-auto d-block">Send Feedback</button>
+      </form>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="{% static 'js/similarity_report.js' %}"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const stars = document.querySelectorAll('#star-rating .star')
+      const ratingInput = document.getElementById('id_rating')
+
+      if (ratingInput) {
+        stars.forEach((star) => {
+          star.addEventListener('click', () => {
+            const value = parseInt(star.dataset.value, 10)
+            ratingInput.value = value
+
+            stars.forEach((s) => {
+              const filled = parseInt(s.dataset.value, 10) <= value
+              s.classList.toggle('bi-star-fill', filled)
+              s.classList.toggle('bi-star', !filled)
+            })
+          })
+        })
+      }
+
+      document.querySelectorAll('.feedback-toast').forEach((el) => {
+        new bootstrap.Toast(el, { delay: 4000 }).show()
+      })
+
+      document.querySelectorAll('.sig-input').forEach((input) => {
+        const out = document.querySelector(`[data-sig-out="${input.dataset.sig}"]`)
+        if (!out) return
+        input.addEventListener('input', () => {
+          out.textContent = input.value.trim() || '\u00a0'
+        })
+      })
+    })
+  </script>
+
+  <script src="{% static 'js/script.js' %}"></script>
+{% endblock %}

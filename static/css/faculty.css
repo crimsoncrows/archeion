@@ -1,0 +1,377 @@
+/* ==========================================================================
+   FACULTY STYLES
+   Load AFTER the main stylesheet — this file relies on the :root
+   variables (colors, fonts) defined there.
+
+   TABLE OF CONTENTS
+   1. Base
+   2. Dashboard Variables
+   3. Stat Cards
+   4. Small Labels
+   5. Filters
+   6. Result Borders
+   7. Reports: Type Hierarchy
+   8. Reports: Side-by-Side Layout
+   9. Responsive
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. BASE
+   ========================================================================== */
+
+body:has(.fac-reports) {
+  background: var(--color-white);
+}
+
+
+/* ==========================================================================
+   2. DASHBOARD VARIABLES
+   ========================================================================== */
+
+.fac-dashboard {
+  /* Card gradient colors (same as the admin dashboard) */
+  --fac-orange-start: #e8743a;
+  --fac-orange-end: #c4501f;
+  --fac-dark-start: #3d3838;
+  --fac-dark-end: #171414;
+  --fac-light-start: #f8b396;
+  --fac-light-end: #f0896a;
+
+  /* Gradients */
+  --fac-gradient-orange: linear-gradient(160deg, var(--fac-orange-start) 0%, var(--fac-orange-end) 100%);
+  --fac-gradient-dark: linear-gradient(160deg, var(--fac-dark-start) 0%, var(--fac-dark-end) 100%);
+  --fac-gradient-light: linear-gradient(160deg, var(--fac-light-start) 0%, var(--fac-light-end) 100%);
+}
+
+
+/* ==========================================================================
+   3. STAT CARDS
+   (order matters: wide/small variants must come after .fac-stat-card)
+   ========================================================================== */
+
+/* Base card */
+.fac-stat-card {
+  border-radius: 16px;
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 170px;
+  padding: 24px;
+  position: relative;
+  text-decoration: none;
+}
+
+.fac-stat-card:focus-visible {
+  outline: 3px solid var(--color-primary-light);
+  outline-offset: 3px;
+}
+
+.fac-stat-card .bi {
+  font-size: 2.5em;
+}
+
+/* Card content */
+.fac-stat-icon-top {
+  display: flex;
+  justify-content: center;
+}
+
+.fac-stat-number {
+  font-family: var(--font-body);
+  font-size: 2.2em;
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.fac-stat-text {
+  font-family: var(--font-body);
+  font-size: 0.78em;
+  margin: 0;
+}
+
+/* Wide card: icon, number and label in a row */
+.fac-stat-wide {
+  align-items: center;
+  flex-direction: row;
+  gap: 20px;
+  min-height: auto;
+}
+
+/* Small cards under the wide card */
+.fac-stat-small {
+  align-items: center;
+  flex-direction: row;
+  gap: 14px;
+  min-height: auto;
+  padding: 18px 20px;
+}
+
+.fac-stat-small .bi {
+  font-size: 1.6em;
+}
+
+.fac-stat-small .fac-stat-number {
+  font-size: 1.5em;
+}
+
+/* Color variants */
+.fac-stat-orange {
+  background: var(--fac-gradient-orange);
+}
+
+.fac-stat-dark {
+  background: var(--fac-gradient-dark);
+}
+
+.fac-stat-light {
+  background: var(--fac-gradient-light);
+}
+
+
+/* ==========================================================================
+   4. SMALL LABELS
+   ========================================================================== */
+
+.fac-stat-label {
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  margin-bottom: 0;
+}
+
+
+/* ==========================================================================
+   5. FILTERS
+   ========================================================================== */
+
+/* Container */
+.fac-filters {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Filter fields */
+.fac-filter {
+  flex: 0 0 150px;
+  min-width: 0;
+}
+
+.fac-filter-search {
+  flex: 1 1 220px;
+}
+
+.fac-filter-label {
+  color: var(--color-text-light);
+  display: block;
+  font-family: var(--font-body);
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.fac-filter-input,
+.fac-filter-input.form-control,
+.fac-filter-input.form-select {
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  height: 38px;
+  padding-bottom: 6px;
+  padding-top: 6px;
+}
+
+/* Actions */
+.fac-filter-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 16px;
+  height: 38px;
+}
+
+.fac-filter-btn {
+  background-color: var(--color-charcoal);
+  border: none;
+  border-radius: 8px;
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  height: 38px;
+  padding: 0 20px;
+}
+
+
+/* ==========================================================================
+   6. RESULT BORDERS
+   ========================================================================== */
+
+.sim-source.sim-source-high     { border: 2px solid rgb(167, 0, 0); }    /* red */
+.sim-source.sim-source-moderate { border: 2px solid rgb(219, 178, 15); } /* yellow */
+.sim-source.sim-source-none     { border: 2px solid rgb(3, 130, 79); }   /* green */
+
+
+/* ==========================================================================
+   7. REPORTS: TYPE HIERARCHY
+   Scoped under .fac-reports so student-facing similarity pages are
+   not affected. !important on font-family is needed because the main
+   stylesheet sets `p { font-family: ... !important }`.
+   ========================================================================== */
+
+/* Level 1: section titles */
+.fac-reports .sim-panel-title {
+  color: var(--color-primary);
+  font-family: var(--font-heading) !important;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 2px !important;
+}
+
+.fac-reports .sim-sources-sub {
+  color: var(--color-text-light);
+  font-size: 0.8rem;
+  margin-bottom: 14px;
+}
+
+/* Level 2: study / check titles */
+.fac-reports .sim-source-title {
+  color: var(--color-text-dark);
+  font-family: var(--font-body) !important;
+  font-size: 1.3rem;
+  font-weight: 300;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+/* Level 3: meta line (name, program) */
+.fac-reports .sim-source-meta {
+  color: var(--color-text-light);
+  font-size: 0.74rem;
+  letter-spacing: 0.2px;
+}
+
+.fac-reports .sim-source-meta .browse-result-program {
+  color: var(--color-text-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.fac-reports .sim-sep {
+  color: var(--color-text-faintest);
+  margin: 0 8px;
+}
+
+/* Level 4: scores and counts */
+.fac-reports .sim-source-pct {
+  font-family: var(--font-heading) !important;
+  font-size: 1.25rem;
+  font-weight: 600;
+  min-width: 3.5rem;
+}
+
+.fac-pct-high     { color: #8f0505; }
+.fac-pct-moderate { color: #9a8a10; }
+.fac-pct-none     { color: #4f7a2a; }
+
+.fac-reports .sim-source-score .fac-stat-label {
+  color: #4f7a2a;
+  font-family: var(--font-heading) !important;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* "3 checks / 2 people" block in Most Matched */
+.fac-reports .text-end .sim-source-pct {
+  color: var(--color-text-dark);
+  display: block;
+  font-size: 1.05rem;
+}
+
+.fac-reports .text-end .fac-stat-label {
+  font-size: 0.74rem;
+}
+
+/* Row spacing */
+.fac-reports .sim-source {
+  padding: 18px 22px;
+}
+
+/* Thicker progress bar to match the larger score */
+.fac-reports .sim-bar {
+  border-radius: 999px;
+  height: 10px;
+}
+
+
+/* ==========================================================================
+   8. REPORTS: SIDE-BY-SIDE LAYOUT
+   Most Matched + All Checks sit next to each other from 1200px up
+   (Bootstrap col-xl-6) and stack below that. The page is widened so
+   each column has room.
+   (Must stay after section 7 — the title size here overrides it.)
+   ========================================================================== */
+
+.fac-reports .sim-results-main {
+  max-width: 1320px;
+}
+
+.fac-reports .sim-source {
+  gap: 18px;
+}
+
+.fac-reports .sim-source-score {
+  flex: 0 0 170px;
+}
+
+/* Overrides the 1.3rem set in section 7 (Level 2) */
+.fac-reports .sim-source-title {
+  font-size: 1.15rem;
+}
+
+/* Let long titles with no spaces (filenames) wrap inside the card */
+.fac-reports .sim-source-body {
+  min-width: 0;
+}
+
+.fac-reports .sim-source-title {
+  overflow-wrap: anywhere;
+}
+
+
+/* ==========================================================================
+   9. RESPONSIVE
+   ========================================================================== */
+
+/* ---------- ≤ 576px ---------- */
+@media (max-width: 576px) {
+
+  /* Stat cards */
+  .fac-stat-card {
+    min-height: auto;
+  }
+
+  .fac-stat-number {
+    font-size: 1.8em;
+  }
+
+  /* Filters (order matters: search basis overrides the shared rule) */
+  .fac-filter,
+  .fac-filter-search {
+    flex: 1 1 calc(50% - 6px);
+  }
+
+  .fac-filter-search {
+    flex-basis: 100%;
+  }
+
+  /* Reports */
+  .fac-reports .sim-source-score {
+    flex-basis: auto;
+  }
+}

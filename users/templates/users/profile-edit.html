@@ -1,0 +1,193 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+
+<main class="container mt-100 mb-50">
+    <h1 class="h1-browse-title text-center mb-4">Edit Info</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+
+            <div class="card profile-edit-card">
+                <div class="card-body">
+
+                    <!-- Error Alert -->
+                    <div class="alert alert-danger d-none mb-4" id="infoError" role="alert">
+                        <i class="bi bi-exclamation-circle-fill me-2"></i>
+                        <span id="infoErrorMsg"></span>
+                    </div>
+
+                    <!-- Messages -->
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} mb-4" role="alert">
+                        <i class="bi bi-{% if message.tags == 'success' %}check-circle-fill{% else %}exclamation-circle-fill{% endif %} me-2"></i>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger mb-4" role="alert">
+                        <i class="bi bi-exclamation-circle-fill me-2"></i>
+                        <span>{{ form.non_field_errors.0 }}</span>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+
+                            <!-- Full Name -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fullname">Full Name</label>
+                                    <input
+                                        type="text"
+                                        class="form-control{% if form.fullname.errors %} is-invalid{% endif %}"
+                                        id="fullname"
+                                        name="fullname"
+                                        value="{{ form.fullname.value|default_if_none:'' }}">
+                                    {% if form.fullname.errors %}
+                                    <div class="invalid-feedback">{{ form.fullname.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Username -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input
+                                        type="text"
+                                        class="form-control{% if form.username.errors %} is-invalid{% endif %}"
+                                        id="username"
+                                        name="username"
+                                        value="{{ form.username.value|default_if_none:'' }}">
+                                    {% if form.username.errors %}
+                                    <div class="invalid-feedback">{{ form.username.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input
+                                        type="email"
+                                        class="form-control{% if form.email.errors %} is-invalid{% endif %}"
+                                        id="email"
+                                        name="email"
+                                        value="{{ form.email.value|default_if_none:'' }}">
+                                    {% if form.email.errors %}
+                                    <div class="invalid-feedback">{{ form.email.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-12">
+                                <div class="form-group">
+
+                                    <label for="current-password">Password</label>
+
+                                    <div class="input-group mb-3 has-validation">
+                                        <input
+                                            type="password"
+                                            class="form-control{% if form.current_password.errors %} is-invalid{% endif %}"
+                                            id="current-password"
+                                            name="current_password"
+                                            placeholder="Enter current password"
+                                            autocomplete="current-password">
+
+                                        <span
+                                            class="input-group-text bg-white border-start-0"
+                                            onclick="togglePass('current-password', this)"
+                                            style="cursor:pointer;">
+                                            <i class="bi bi-eye"></i>
+                                        </span>
+
+                                        {% if form.current_password.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.current_password.errors.0 }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="input-group has-validation">
+                                        <input
+                                            type="password"
+                                            class="form-control{% if form.new_password.errors %} is-invalid{% endif %}"
+                                            id="new-password"
+                                            name="new_password"
+                                            placeholder="Enter new password (optional)"
+                                            autocomplete="new-password">
+
+                                        <span
+                                            class="input-group-text bg-white border-start-0"
+                                            onclick="togglePass('new-password', this)"
+                                            style="cursor:pointer;">
+                                            <i class="bi bi-eye"></i>
+                                        </span>
+
+                                        {% if form.new_password.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.new_password.errors.0 }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="col-12 mt-4">
+                                <div class="d-grid gap-3 col-md-5 mx-auto">
+
+                                    <button type="submit" class="btn save-btn w-100">
+                                        Save Changes
+                                    </button>
+
+                                    <a href="{% url 'users:profile' %}" class="btn cancel-btn w-100">
+                                        Cancel
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePass(id, el) {
+    const input = document.getElementById(id);
+    const icon = el.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+}
+</script>
+{% endblock %}

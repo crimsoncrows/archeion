@@ -1,0 +1,84 @@
+{% extends "adminlayout.html" %}
+
+{% block title %}Deactivate User Account{% endblock %}
+
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h1 class="admin-title mb-1">Manage User</h1>
+    <p class="admin-welcome mb-0">Deactivate User Account</p>
+  </div>
+
+  <div class="d-flex align-items-center gap-2">
+    <i class="bi bi-person-circle admin-avatar"></i>
+    <span class="admin-username">{{ request.user.username }}</span>
+  </div>
+</div>
+
+<div style="max-width: 600px;">
+
+  <div class="admin-table-card mb-4">
+    <div class="table-responsive">
+      <table class="table admin-table mb-0">
+        <tbody>
+          <tr>
+            <th scope="row">User ID</th>
+            <td>{{ managed_user.user_id|stringformat:"03d" }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Full Name</th>
+            <td>{{ managed_user.full_name }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Username</th>
+            <td>{{ managed_user.username }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Email</th>
+            <td>{{ managed_user.email }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Role</th>
+            <td>{{ managed_user.role.role_name }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Status</th>
+            <td>
+              {% if managed_user.is_active %}
+                <span class="badge text-bg-success">Active</span>
+              {% else %}
+                <span class="badge text-bg-secondary">Inactive</span>
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="alert alert-warning" role="alert">
+    This user will no longer be able to access the system. Existing related records will be retained.
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="d-flex gap-3">
+      <a
+        href="{% url 'administratordb:admin_users' %}"
+        class="btn admin-cancel-btn">
+        Cancel
+      </a>
+      {% if managed_user.is_active %}
+        <button type="submit" class="btn btn-danger">
+          Deactivate Account
+        </button>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+{% endblock %}

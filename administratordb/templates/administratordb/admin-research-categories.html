@@ -1,0 +1,215 @@
+{% extends "adminlayout.html" %}
+
+{% block title %}View Categories{% endblock %}
+
+{% block content %}
+
+<main class="admin-main">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+
+        <h1 class="admin-title mb-0">
+            View Categories
+        </h1>
+
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-person-circle admin-avatar"></i>
+
+            <span class="admin-username">
+                {{ request.user.username }}
+            </span>
+        </div>
+
+    </div>
+
+    <!-- Statistics -->
+    <div class="d-flex gap-3 mb-4 flex-wrap">
+
+        <!-- Total categories -->
+        <div class="admin-stat-card admin-stat-orange admin-stat-row"
+             style="min-width:180px; flex:1;">
+            <div>
+                <div class="admin-stat-number">
+                    {{ total_categories }}
+                </div>
+
+                <div class="admin-stat-label">
+                    Categories
+                </div>
+            </div>
+        </div>
+
+        <!-- Most popular category -->
+        <div class="admin-stat-card admin-stat-light admin-stat-row"
+             style="min-width:220px; flex:1;">
+            <div>
+
+                <div class="admin-stat-number" style="color:#bf480d;">
+                    {% if most_used_category %}
+                        {{ most_used_category.category_name }}
+                    {% else %}
+                        None
+                    {% endif %}
+                </div>
+
+                <div class="admin-stat-label" style="color:#bf480d;">
+                    {% if most_used_category %}
+                        {{ most_used_category.paper_count }} 
+                        paper{{ most_used_category.paper_count|pluralize }} | Most Popular Category
+                    {% else %}
+                        No Popular Category yet.
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Search -->
+    <form method="GET" class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+
+        <input
+            type="text"
+            name="q"
+            value="{{ request.GET.q }}"
+            class="form-control admin-search-input"
+            placeholder="Search for a category..."
+            style="max-width:280px;">
+
+        <button class="btn admin-search-btn" type="submit">
+            <i class="bi bi-search me-1"></i>
+            Search
+        </button>
+
+        <div class="ms-auto">
+            <a href="{% url 'administratordb:admin_add_category' %}" class="btn admin-add-btn">
+                <i class="bi bi-plus-circle me-1"></i>
+                Add Category
+            </a>
+        </div>
+
+    </form>
+
+    <!-- Categories Table -->
+    <div class="admin-table-card mb-3">
+
+        <div class="table-responsive">
+
+            <table class="table admin-table mb-0">
+
+                <thead>
+                    <tr>
+                        <th>Category ID</th>
+                        <th>Category</th>
+                        <th>Papers</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for category in categories %}
+
+                    <tr>
+
+                        <td>{{ category.category_id }}</td>
+
+                        <td>{{ category.category_name }}</td>
+
+                        <td>{{ category.paper_count }}</td>
+
+                        <td>
+                            <a href="{% url 'administratordb:admin_edit_category' category.category_id %}"
+                               class="admin-edit-link">
+                                Edit
+                            </a>
+                        </td>
+
+                        <td>
+                            <!-- Delete (opens confirmation modal) -->
+                            <button type="button"
+                                class="admin-delete-link border-0 bg-transparent p-0"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteCategoryModal"
+                                data-delete-url="{% url 'administratordb:admin_delete_category' category.category_id %}"
+                                data-id="{{ category.category_id }}"
+                                data-name="{{ category.category_name }}">
+                                Delete
+                            </button>
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="5"
+                            class="text-center py-5 text-muted">
+
+                            No categories found.
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <p class="text-center admin-pagination-label mt-3 mb-0">
+            Total Categories: {{ total_categories }}
+        </p>
+
+    </div>
+
+</main>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:16px;">
+
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="deleteCategoryLabel">
+                    Delete Category
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to delete category #<span id="deleteCatId"></span>
+                (<strong id="deleteCatName"></strong>)?
+                This can't be undone.
+            </div>
+
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteCategoryForm" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Delete modal: point the form at the clicked row's delete URL
+    document.getElementById('deleteCategoryModal').addEventListener('show.bs.modal', function (event) {
+        const btn = event.relatedTarget;
+        document.getElementById('deleteCatId').textContent = btn.dataset.id;
+        document.getElementById('deleteCatName').textContent = btn.dataset.name;
+        document.getElementById('deleteCategoryForm').action = btn.dataset.deleteUrl;
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,194 @@
+{% extends "layout.html" %}
+
+{% block title %}Browse{% endblock %}
+
+{% block content %}
+
+<main class="mt-100 mb-5">
+  <div class="container">
+
+    <div class="text-center mb-4">
+      <h1 class="h1-browse-title">Browse Research</h1>
+      <p class="p-browse-sub">Discover works from College of Computer Studies &ndash; Tarlac State University students.</p>
+    </div>
+
+    <!-- Search + filters -->
+    <form method="get" action="{% url 'papers:browse' %}" class="mb-4">
+
+      <!-- Search row -->
+      <div class="d-flex gap-2 justify-content-center">
+        <input type="text" name="q" value="{{ q }}" class="form-control browse-search"
+               placeholder="Search papers..." style="max-width: 320px;">
+
+        <button class="btn btn-dark browse-btn-search" type="submit">
+          <i class="bi bi-search me-1"></i> Search
+        </button>
+
+        <button class="btn btn-outline-secondary browse-btn-filter" type="button"
+                data-bs-toggle="collapse" data-bs-target="#filterPanel"
+                aria-expanded="{% if active_filters %}true{% else %}false{% endif %}"
+                aria-controls="filterPanel">
+          <i class="bi bi-funnel me-1"></i> Filter
+          {% if active_filters %}<span class="filter-count">{{ active_filters }}</span>{% endif %}
+        </button>
+      </div>
+
+      <!-- Filter panel -->
+      <div class="collapse {% if active_filters %}show{% endif %} mt-3" id="filterPanel">
+        <div class="browse-filter-panel mx-auto">
+          <div class="row g-4">
+
+            <div class="col-12 col-md-4">
+              <h6 class="filter-group-title">Document Type</h6>
+              {% for value, label in type_choices %}
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="type"
+                         value="{{ value }}" id="type-{{ value }}"
+                         {% if value in selected_types %}checked{% endif %}>
+                  <label class="form-check-label" for="type-{{ value }}">{{ label }}</label>
+                </div>
+              {% endfor %}
+            </div>
+
+            <div class="col-12 col-md-4">
+              <h6 class="filter-group-title">Program</h6>
+              <div class="filter-scroll">
+                {% for p in programs %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="program"
+                           value="{{ p }}" id="program-{{ forloop.counter }}"
+                           {% if p in selected_programs %}checked{% endif %}>
+                    <label class="form-check-label" for="program-{{ forloop.counter }}">{{ p }}</label>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <h6 class="filter-group-title">Year</h6>
+              <div class="filter-scroll">
+                {% for y in years %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="year"
+                           value="{{ y }}" id="year-{{ y }}"
+                           {% if y|stringformat:"s" in selected_years %}checked{% endif %}>
+                    <label class="form-check-label" for="year-{{ y }}">{{ y }}</label>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+          </div>
+
+          <div class="d-flex justify-content-end align-items-center gap-3 mt-4 pt-3 filter-footer">
+            <a href="{% url 'papers:browse' %}" class="filter-clear">Clear all</a>
+            <button type="submit" class="btn btn-dark browse-btn-search px-4">Apply filters</button>
+          </div>
+        </div>
+      </div>
+
+    </form>
+
+    <!-- Results info -->
+    <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+      <div>
+        <span class="browse-results-meta">
+          {% if paginator.count %}Page {{ page_obj.number }} out of {{ paginator.num_pages }}{% else %}No results{% endif %}
+        </span><br>
+        <span class="browse-results-sub">
+          {% if paginator.count %}
+            Showing {{ page_obj.start_index }}&ndash;{{ page_obj.end_index }} of {{ paginator.count }} result{{ paginator.count|pluralize }}
+          {% endif %}
+        </span>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="list-group browse-results-list">
+
+      {% for research_paper in page_obj %}
+      <a href="{% url 'papers:document_info' research_paper.paper_id %}"
+         class="list-group-item list-group-item-action browse-result-item">
+        <div class="d-flex align-items-center gap-3">
+
+          <div class="browse-result-icon">
+            {% if research_paper.program == 'IT-WMA' %}
+              <i class="bi bi-globe2"></i>
+            {% elif research_paper.program == 'IT-TSM' %}
+              <i class="bi bi-tools"></i>
+            {% elif research_paper.program == 'IT-NA' %}
+              <i class="bi bi-diagram-3"></i>
+            {% elif research_paper.program == 'CS' %}
+              <i class="bi bi-code-slash"></i>
+            {% elif research_paper.program == 'IS' %}
+              <i class="bi bi-graph-up-arrow"></i>
+            {% else %}
+              <i class="bi bi-file-earmark-text"></i>
+            {% endif %}
+          </div>
+
+          <div class="flex-grow-1">
+            <p class="p-browse-result-title mb-1">{{ research_paper.title }}</p>
+            <p class="p-browse-result-meta mb-0">
+              {{ research_paper.authors }} &bull; {{ research_paper.year }} &bull;
+              <span class="browse-result-program">{{ research_paper.program }}</span>
+            </p>
+          </div>
+
+          <span class="badge browse-badge-{{ research_paper.type }}">
+            {{ research_paper.get_type_display }}
+          </span>
+
+        </div>
+      </a>
+      {% empty %}
+        <div class="text-center">
+          <i class="bi bi-emoji-dizzy-fill error-icon"></i>
+          <h1 class="h1-error-title">Nothing to see...</h1>
+          <p class="p-error-sub">No research papers found.</p>
+        </div>
+      {% endfor %}
+
+    </div>
+
+    <!-- Pagination -->
+    {% if paginator.num_pages > 1 %}
+    <nav class="mt-4 d-flex justify-content-center" aria-label="Browse pagination">
+      <ul class="pagination pagination-sm browse-pagination">
+
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?{{ querystring }}&page={{ page_obj.previous_page_number }}">&laquo;</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+        {% endif %}
+
+        {% for p in page_range %}
+          {% if p == paginator.ELLIPSIS %}
+            <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+          {% elif p == page_obj.number %}
+            <li class="page-item active" aria-current="page"><span class="page-link">{{ p }}</span></li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="?{{ querystring }}&page={{ p }}">{{ p }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?{{ querystring }}&page={{ page_obj.next_page_number }}">&raquo;</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+        {% endif %}
+
+      </ul>
+    </nav>
+    {% endif %}
+
+  </div>
+</main>
+
+{% endblock %}

@@ -1,0 +1,103 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Archeion – Admin Login</title>
+  <link rel="shortcut icon" href="{% static 'imgs/logo/archeion-icon.png' %}" type="image/x-icon" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=MuseoModerno:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'css/style.css' %}" />
+<link rel="stylesheet" href="{% static 'css/admin_db.css' %}" />
+  <script src="{% static 'js/script.js' %}" defer></script>
+</head>
+
+<body class="admin-body d-flex align-items-center justify-content-center min-vh-100">
+  <main class="admin-login-main d-flex align-items-center justify-content-center w-100 p-4">
+
+    <div class="admin-card">
+
+      <div class="text-center mb-1">
+        <img src="{% static 'imgs/logo/archeion-logo.png' %}" alt="Archeion" class="admin-logo" />
+      </div>
+
+      <p class="admin-subtitle text-center mb-4">Administrator Dashboard</p>
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger py-2 text-center">
+          {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% elif form.errors %}
+        <div class="alert alert-danger py-2 text-center">
+          Invalid username or password.
+        </div>
+      {% endif %}
+
+      <form class="d-flex flex-column" method="post" action="{% url 'administratordb:admin_login' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.GET.next }}" />
+
+        <div class="form-group mb-3">
+          <label for="adminUsername">Username</label>
+          <input type="text" name="username" class="form-control" id="adminUsername" placeholder="Enter your username"
+            autocomplete="username" value="{{ form.username.value|default_if_none:'' }}" required />
+        </div>
+
+        <div class="form-group mb-2">
+          <label for="adminPassword">Password</label>
+          <div class="input-group">
+            <input type="password" name="password" class="form-control" id="adminPassword" placeholder="Password"
+              autocomplete="current-password" required />
+            <span class="input-group-text bg-white border-start-0" onclick="togglePass('adminPassword', this)"
+              style="cursor:pointer;">
+              <i class="bi bi-eye"></i>
+            </span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn login-btn mt-3">Sign in</button>
+
+      </form>
+
+    </div>
+
+  </main>
+
+  {% if rate_limited %}
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="rateLimitToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="bi bi-exclamation-circle-fill me-2"></i>
+          Archeion is still in development, slow down. You've been rate limited. Try again after a minute.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const toastEl = document.getElementById('rateLimitToast');
+      if (toastEl) {
+        new bootstrap.Toast(toastEl).show();
+      }
+    });
+  </script>
+  {% endif %}
+
+</body>
+
+</html>

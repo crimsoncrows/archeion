@@ -1,0 +1,924 @@
+/* ==========================================================================
+   ADMIN STYLES
+   Load AFTER the main stylesheet — this file relies on the :root
+   variables (colors, fonts) defined there.
+
+   TABLE OF CONTENTS
+   1.  Base & Page Layout
+   2.  Admin Login
+   3.  Sidebar
+   4.  Main Content
+   5.  Stat Cards
+   6.  Tables (Users Table + Resizable Columns)
+   7.  Admin Dashboard Only
+   8.  Research Menu Page
+   9.  Manage Users Page
+   10. Edit User Page
+   11. Mobile Header + Overlay
+   12. Responsive
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. BASE & PAGE LAYOUT
+   ========================================================================== */
+
+/* Body */
+.admin-body {
+  background: var(--color-charcoal);
+  background-attachment: unset;
+}
+
+/* Scoped page background override (admin login + dashboard) */
+.admin-page {
+  background: var(--color-white) !important;
+  background-attachment: unset !important;
+  flex-direction: row !important;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.admin-page .admin-main {
+  flex: 1;
+  overflow-y: auto;
+}
+
+
+/* ==========================================================================
+   2. ADMIN LOGIN
+   ========================================================================== */
+
+/* Admin login card */
+.admin-card {
+  background: var(--color-white);
+  border-radius: 20px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+  max-width: 430px;
+  padding: 52px 48px 48px;
+  width: 100%;
+}
+
+/* Logo */
+.admin-logo {
+  height: auto;
+  max-width: 160px;
+}
+
+/* Subtitle */
+.admin-subtitle {
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: 0.78em;
+}
+
+
+/* ==========================================================================
+   3. SIDEBAR
+   ========================================================================== */
+
+.admin-sidebar {
+  background-color: var(--color-charcoal);
+  min-height: 100vh;
+  padding: 24px 20px;
+  width: 220px;
+}
+
+.admin-sidebar-logo {
+  margin-bottom: 32px;
+  max-width: 140px;
+}
+
+/* Nav links */
+.admin-nav-link {
+  align-items: center;
+  border-radius: 8px;
+  color: #cfcfcf;
+  display: flex;
+  font-family: var(--font-body);
+  font-size: 0.85em;
+  font-weight: 500;
+  gap: 12px;
+  padding: 10px 14px;
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.admin-nav-link i {
+  font-size: 1.1em;
+}
+
+.admin-nav-link:hover {
+  background-color: #3d3a3a;
+  color: var(--color-white);
+}
+
+.admin-nav-link.active {
+  background-color: var(--color-primary-light);
+  color: var(--color-white);
+}
+
+/* Logout button */
+.admin-logout-btn {
+  background-color: var(--color-primary-light);
+  border: none;
+  border-radius: 8px;
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 10px;
+  width: 100%;
+}
+
+.admin-logout-btn:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+
+/* ==========================================================================
+   4. MAIN CONTENT
+   ========================================================================== */
+
+.admin-main {
+  flex: 1;
+  padding: 30px 40px;
+}
+
+.admin-title {
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-size: 1.8em;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.admin-msg {
+  color: var(--color-text-body);
+  font-family: var(--font-body);
+  font-size: 0.85em;
+}
+
+.admin-username {
+  color: var(--color-text-dark);
+  font-family: var(--font-body);
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.admin-avatar {
+  color: #c4c4c4;
+  font-size: 2.2em;
+}
+
+
+/* ==========================================================================
+   5. STAT CARDS
+   (order matters: row variants must come after .admin-stat-card)
+   ========================================================================== */
+
+/* Base card */
+.admin-stat-card {
+  border-radius: 16px;
+  color: var(--color-white);
+  min-height: 170px;
+  padding: 24px;
+  position: relative;
+}
+
+.admin-stat-card .bi {
+  font-size: 2.5em;
+}
+
+.admin-stat-card .admin-stat-icon-top {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+/* Card content */
+.admin-stat-number {
+  font-family: var(--font-body);
+  font-size: 2.2em;
+  font-weight: 700;
+}
+
+.admin-stat-label {
+  font-family: var(--font-body);
+  font-size: 0.78em;
+}
+
+.admin-stat-arrow {
+  bottom: 18px;
+  color: var(--color-white);
+  position: absolute;
+  right: 20px;
+}
+
+/* Color variants */
+.admin-stat-orange {
+  background-color: var(--color-primary-light);
+}
+
+.admin-stat-dark {
+  background-color: var(--color-charcoal);
+}
+
+/* Row variants */
+.admin-stat-dark-row {
+  align-items: center;
+  background-color: var(--color-charcoal);
+  display: flex;
+  justify-content: space-between;
+  min-height: auto;
+  padding: 24px;
+}
+
+.admin-stat-row {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  min-height: auto;
+  padding: 18px 24px;
+}
+
+.admin-stat-row .bi {
+  font-size: 1.8em;
+}
+
+.admin-stat-row .admin-stat-number {
+  font-size: 1.6em;
+}
+
+.admin-stat-light {
+  background-color: var(--color-accent-bg);
+}
+
+
+/* ==========================================================================
+   6. TABLES (USERS TABLE + RESIZABLE COLUMNS)
+   ========================================================================== */
+
+.admin-section-title {
+  color: var(--color-text-dark);
+  font-family: var(--font-body);
+  font-size: 1.15em;
+  font-weight: 700;
+}
+
+.admin-table-card {
+  background-color: #f5f5f5;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+/* Table base */
+.admin-table {
+  font-family: var(--font-body);
+  font-size: 0.82em;
+}
+
+.admin-table thead th {
+  border-bottom: 2px solid var(--color-border);
+  color: var(--color-text-dark);
+  font-weight: 700;
+}
+
+.admin-table td {
+  color: var(--color-text-body);
+  vertical-align: middle;
+}
+
+/* Resizable columns */
+.admin-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.admin-table th {
+  background-clip: padding-box;
+  position: relative;
+}
+
+.admin-table .resizer {
+  cursor: col-resize;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: background-color 0.2s;
+  user-select: none;
+  width: 8px;
+  z-index: 1;
+}
+
+.admin-table .resizer:hover,
+.admin-table .resizer.resizing {
+  background-color: var(--color-primary);
+  border-right: 2px solid var(--color-primary-dark);
+}
+
+.truncate-dynamic {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+/* Clickable feedback cell */
+.feedback-view-trigger {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.feedback-view-trigger:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+
+/* ==========================================================================
+   7. ADMIN DASHBOARD ONLY
+   ========================================================================== */
+
+/* Dashboard-scoped variables */
+.admin-dashboard {
+  /* Card gradient colors */
+  --dash-orange-start: #e8743a;
+  --dash-orange-end: #c4501f;
+  --dash-dark-start: #3d3838;
+  --dash-dark-end: #171414;
+  --dash-light-start: #f8b396;
+  --dash-light-end: #f0896a;
+  --dash-ratings-start: var(--color-white);
+  --dash-ratings-end: var(--color-accent-bg);
+
+  /* Gradients */
+  --dash-gradient-orange: linear-gradient(160deg, var(--dash-orange-start) 0%, var(--dash-orange-end) 100%);
+  --dash-gradient-dark: linear-gradient(160deg, var(--dash-dark-start) 0%, var(--dash-dark-end) 100%);
+  --dash-gradient-light: linear-gradient(160deg, var(--dash-light-start) 0%, var(--dash-light-end) 100%);
+  --dash-gradient-ratings: linear-gradient(to bottom, var(--dash-ratings-start) 0%, var(--dash-ratings-end) 100%);
+
+  /* Rating badge colors (1 = lowest, 5 = highest) */
+  --dash-rating-1: var(--color-danger);
+  --dash-rating-2: #e8743a;
+  --dash-rating-3: #f0c419;
+  --dash-rating-4: #8bc34a;
+  --dash-rating-5: #4caf50;
+
+  /* Rating card */
+  --dash-rating-item-bg: var(--color-white);
+  --dash-rating-item-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Stat cards */
+.admin-dashboard .admin-stat-orange {
+  background: var(--dash-gradient-orange);
+}
+
+.admin-dashboard .admin-stat-dark,
+.admin-dashboard .admin-stat-dark-row {
+  background: var(--dash-gradient-dark);
+}
+
+.admin-dashboard .admin-stat-light {
+  background: var(--dash-gradient-light);
+}
+
+/* Recent ratings */
+.admin-dashboard .admin-ratings-card {
+  background: var(--dash-gradient-ratings);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.admin-dashboard .admin-rating-item {
+  align-items: center;
+  background-color: var(--dash-rating-item-bg);
+  border-radius: 12px;
+  box-shadow: var(--dash-rating-item-shadow);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 14px 16px;
+}
+
+.admin-dashboard .admin-rating-item:last-child {
+  margin-bottom: 0;
+}
+
+.admin-dashboard .admin-rating-name {
+  color: var(--color-text-dark);
+  font-family: var(--font-body);
+  font-size: 0.85em;
+  font-weight: 700;
+}
+
+.admin-dashboard .admin-rating-role {
+  color: var(--color-text-faint);
+  font-family: var(--font-body);
+  font-size: 0.72em;
+}
+
+/* Rating badges */
+.admin-dashboard .admin-rating-badge {
+  border-radius: 12px;
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 0.8em;
+  font-weight: 700;
+  padding: 6px 14px;
+}
+
+.admin-dashboard .admin-rating-1 {
+  background-color: var(--dash-rating-1);
+}
+
+.admin-dashboard .admin-rating-2 {
+  background-color: var(--dash-rating-2);
+}
+
+.admin-dashboard .admin-rating-3 {
+  background-color: var(--dash-rating-3);
+}
+
+.admin-dashboard .admin-rating-4 {
+  background-color: var(--dash-rating-4);
+}
+
+.admin-dashboard .admin-rating-5 {
+  background-color: var(--dash-rating-5);
+}
+
+
+/* ==========================================================================
+   8. RESEARCH MENU PAGE
+   ========================================================================== */
+
+.admin-research-sub {
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: 0.85em;
+}
+
+/* Quick stats */
+.admin-research-stat {
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 14px;
+  display: flex;
+  gap: 14px;
+  min-width: 200px;
+  padding: 14px 20px;
+}
+
+.admin-research-stat .bi {
+  color: var(--color-primary-light);
+  font-size: 1.6em;
+}
+
+.admin-research-stat-number {
+  color: var(--color-text-dark);
+  font-family: var(--font-body);
+  font-size: 1.4em;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.admin-research-stat-label {
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: 0.75em;
+}
+
+/* Navigation cards */
+.admin-research-card {
+  align-items: center;
+  background-color: var(--color-dark);
+  border-radius: 16px;
+  color: var(--color-white);
+  display: flex;
+  font-family: var(--font-body);
+  gap: 16px;
+  height: 100%;
+  padding: 22px 22px;
+  text-decoration: none;
+}
+
+.admin-research-card:hover,
+.admin-research-card:focus-visible {
+  color: var(--color-white);
+}
+
+.admin-research-card:focus-visible {
+  outline: 3px solid var(--color-primary-light);
+  outline-offset: 3px;
+}
+
+.admin-research-icon {
+  align-items: center;
+  background-color: rgba(218, 96, 44, 0.15);
+  border-radius: 12px;
+  color: var(--color-primary-light);
+  display: flex;
+  flex-shrink: 0;
+  font-size: 1.4em;
+  height: 52px;
+  justify-content: center;
+  width: 52px;
+}
+
+.admin-research-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.admin-research-title {
+  color: var(--color-accent-bg);
+  font-family: var(--font-heading);
+  font-size: 1.05em;
+  font-weight: 600;
+}
+
+.admin-research-desc {
+  color: #d6d6d6;
+  font-size: 0.8em;
+  line-height: 1.5;
+}
+
+.admin-research-arrow {
+  color: var(--color-text-light);
+  flex-shrink: 0;
+  font-size: 1.1em;
+}
+
+
+/* ==========================================================================
+   9. MANAGE USERS PAGE
+   ========================================================================== */
+
+/* Search */
+.admin-search-input {
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.82em;
+}
+
+.admin-search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: none;
+}
+
+.admin-search-btn {
+  background-color: var(--color-charcoal);
+  border-radius: 8px;
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 0.82em;
+  font-weight: 600;
+  padding: 8px 20px;
+}
+
+.admin-search-btn:hover {
+  background-color: var(--color-text-dark);
+  color: var(--color-white);
+}
+
+/* Filter */
+.admin-filter-btn {
+  background-color: var(--color-white);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  color: var(--color-text-dark);
+  font-family: var(--font-body);
+  font-size: 0.82em;
+  font-weight: 600;
+  padding: 8px 14px;
+}
+
+.admin-filter-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* Add button */
+.admin-add-btn {
+  background-color: var(--color-primary-light);
+  border-radius: 8px;
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 0.82em;
+  font-weight: 600;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+.admin-add-btn:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* Row action links */
+.admin-edit-link {
+  color: #2563eb;
+  font-family: var(--font-body);
+  font-size: 0.82em;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-edit-link:hover {
+  text-decoration: underline;
+}
+
+.admin-view-link {
+  color: green;
+  font-family: var(--font-body);
+  font-size: 0.82em;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-delete-link {
+  color: var(--color-primary-light);
+  font-family: var(--font-body);
+  font-size: 0.82em;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-delete-link:hover {
+  text-decoration: underline;
+}
+
+/* Pagination */
+.admin-pagination-label {
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: 0.78em;
+}
+
+
+/* ==========================================================================
+   10. EDIT USER PAGE
+   ========================================================================== */
+
+/* Role select */
+.admin-role-select {
+  font-family: var(--font-body);
+  font-size: 0.82em;
+  max-width: 160px;
+}
+
+.admin-role-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: none;
+}
+
+.admin-role-note {
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: 0.75em;
+  margin-top: 6px;
+}
+
+/* Form buttons */
+.admin-cancel-btn {
+  background-color: var(--color-primary-light);
+  border-radius: 8px;
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 10px 28px;
+  text-decoration: none;
+}
+
+.admin-cancel-btn:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.admin-save-btn {
+  background-color: var(--color-charcoal);
+  border-radius: 8px;
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 10px 28px;
+}
+
+.admin-save-btn:hover {
+  background-color: var(--color-text-dark);
+  color: var(--color-white);
+}
+
+
+/* ==========================================================================
+   11. MOBILE HEADER + OVERLAY
+   ========================================================================== */
+
+.admin-mobile-header {
+  background-color: var(--color-charcoal);
+  padding: 12px 24px;
+  z-index: 1040;
+}
+
+.admin-mobile-header .mobile-logo {
+  max-height: 25px;
+}
+
+.admin-sidebar-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  height: 100vh;
+  left: 0;
+  opacity: 0;
+  position: fixed;
+  top: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  visibility: hidden;
+  width: 100vw;
+  z-index: 1045;
+}
+
+.admin-sidebar-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+
+/* ==========================================================================
+   12. RESPONSIVE
+   (kept in original order — later queries override earlier ones)
+   ========================================================================== */
+
+/* ---------- ≤ 992px ---------- */
+@media (max-width: 992px) {
+  .admin-main {
+    padding: 20px;
+  }
+
+  .admin-stat-dark-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+/* ---------- ≤ 768px ---------- */
+@media (max-width: 768px) {
+
+  /* Layout */
+  .admin-page {
+    flex-direction: column !important;
+  }
+
+  .admin-main>.d-flex.justify-content-between.align-items-start {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  /* Sidebar */
+  .admin-sidebar {
+    height: 100vh;
+    left: 0;
+    position: fixed !important;
+    top: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    width: 260px;
+    z-index: 1050;
+  }
+
+  .admin-sidebar-logo {
+    margin-bottom: 0;
+    max-width: 120px;
+  }
+
+  .admin-sidebar .nav {
+    flex-direction: row !important;
+    gap: 8px !important;
+    justify-content: center;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    width: 100%;
+  }
+
+  .admin-nav-link {
+    font-size: 0.8em;
+    padding: 8px 12px;
+  }
+
+  .admin-sidebar form {
+    margin-bottom: 0 !important;
+    text-align: center;
+    width: 100%;
+  }
+
+  .admin-logout-btn {
+    padding: 8px 30px;
+    width: auto;
+  }
+
+  /* Stat cards */
+  .admin-stat-row {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+
+  /* Manage users toolbar */
+  .admin-search-input,
+  .admin-filter-btn {
+    margin-bottom: 10px;
+    max-width: 100% !important;
+    width: 100%;
+  }
+
+  .admin-search-btn {
+    width: 100%;
+  }
+
+  /* NOTE: this overrides Bootstrap's .ms-auto on admin pages at <=768px */
+  .ms-auto {
+    margin-left: 0 !important;
+    width: 100%;
+  }
+
+  .admin-add-btn {
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+/* ---------- < 768px (off-canvas sidebar) ---------- */
+@media (max-width: 767.98px) {
+
+  /* Layout */
+  .admin-page {
+    flex-direction: column !important;
+  }
+
+  .admin-main {
+    padding-top: 85px !important;
+    /* Account for fixed mobile header */
+    width: 100%;
+  }
+
+  /* Transform sidebar into an off-canvas menu */
+  .admin-sidebar {
+    height: 100vh;
+    left: 0;
+    position: fixed;
+    top: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    width: 260px;
+    z-index: 1050;
+  }
+
+  .admin-sidebar.show {
+    transform: translateX(0);
+  }
+
+  /* Sidebar logo is shown in the mobile top header instead */
+  .admin-sidebar .admin-sidebar-logo {
+    display: none;
+  }
+}
+
+/* ---------- ≤ 576px ---------- */
+@media (max-width: 576px) {
+
+  /* Sidebar */
+  .admin-sidebar .nav {
+    flex-direction: column !important;
+  }
+
+  .admin-logout-btn {
+    width: 100%;
+  }
+
+  /* Main content */
+  .admin-title {
+    font-size: 1.5em;
+  }
+
+  .admin-stat-card {
+    min-height: auto;
+  }
+
+  /* Labels */
+  .pending-label {
+    color: #c2410c;
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+  }
+}

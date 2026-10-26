@@ -1,0 +1,245 @@
+{% extends "adminlayout.html" %}
+
+{% block title %}View Feedback{% endblock %}
+
+{% block content %}
+
+<main class="admin-main">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <h1 class="admin-title mb-0">View Feedback</h1>
+
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-person-circle admin-avatar"></i>
+            <span class="admin-username">
+                {{ request.user.username }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="d-flex gap-3 mb-4 flex-wrap">
+
+        <div class="admin-stat-card admin-stat-orange admin-stat-row" style="min-width:180px; flex:1;">
+            <div>
+                <div class="admin-stat-number">
+                    {{ total_feedback }}
+                </div>
+
+                <div class="admin-stat-label">
+                    Feedback from users
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-stat-card admin-stat-row" style="background-color:#f0896a; min-width:140px; flex:1;">
+            <div>
+                <div class="admin-stat-number">
+                    {{ average_rating|floatformat:1 }}
+                </div>
+
+                <div class="admin-stat-label">
+                    Average Rating
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-stat-card admin-stat-light admin-stat-row" style="min-width:140px; flex:1;">
+            <div>
+                <div class="admin-stat-number" style="color:#bf480d;">
+                    {{ messages_count }}
+                </div>
+
+                <div class="admin-stat-label" style="color:#bf480d;">
+                    Messages
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Search (UI only) -->
+    <div class="d-flex align-items-center gap-2 mb-4">
+
+        <input type="text" class="form-control admin-search-input" placeholder="Search username..."
+            style="max-width:320px;">
+
+        <button class="btn admin-search-btn" type="button">
+            <i class="bi bi-search me-1"></i>
+            Search
+        </button>
+
+    </div>
+
+    <!-- Feedback Table -->
+    <div class="admin-table-card mb-3">
+
+        <div class="table-responsive">
+
+            <table class="table admin-table mb-0">
+
+                <thead>
+                    <tr>
+                        <th>Feedback ID</th>
+                        <th>User</th>
+                        <th>Message</th>
+                        <th>Rating</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for feedback in feedbacks %}
+
+                    <tr>
+
+                        <td>
+                            {{ feedback.feedback_id }}
+                        </td>
+
+                        <!-- Click username to view feedback -->
+                        <td class="feedback-view-trigger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#feedbackModal"
+                            data-id="{{ feedback.feedback_id }}"
+                            data-user="{{ feedback.user.username }}"
+                            data-rating="{{ feedback.rating }}"
+                            data-message="{{ feedback.message }}">
+                            {{ feedback.user.username }}
+                        </td>
+
+                        <td>
+                            {% if feedback.message %}
+                            {{ feedback.message|truncatechars:60 }}
+                            {% else %}
+                            <span class="text-muted">No message</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                             <i class="bi bi-star-fill admin-star"></i>  {{ feedback.rating }}/5
+                        </td>
+
+                        <td>
+                            <!-- Delete (opens confirmation modal) -->
+                            <button type="button"
+                                class="admin-delete-link border-0 bg-transparent p-0"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteFeedbackModal"
+                                data-delete-url="{% url 'administratordb:admin_delete_feedback' feedback.feedback_id %}"
+                                data-id="{{ feedback.feedback_id }}">
+                                Delete
+                            </button>
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            No feedback has been submitted yet.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <p class="text-center admin-pagination-label mt-3 mb-0">
+            Total Feedback: {{ total_feedback }}
+        </p>
+
+    </div>
+
+</main>
+
+<!-- View Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:16px;">
+
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="feedbackModalLabel" style="color:#bf480d;">
+                    Feedback #<span id="fbId"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body pb-4">
+                <div class="mb-3">
+                    <small class="text-muted d-block">User</small>
+                    <span id="fbUser" class="fw-semibold"></span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Rating</small>
+                    <span id="fbStars" style="color:#f5b301; font-size:1.2rem;"></span>
+                    <span id="fbRating" class="ms-1"></span>
+                </div>
+                <div>
+                    <small class="text-muted d-block">Message</small>
+                    <p id="fbMessage" class="mb-0" style="white-space:pre-wrap; word-break:break-word;"></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteFeedbackModal" tabindex="-1" aria-labelledby="deleteFeedbackLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:16px;">
+
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="deleteFeedbackLabel">
+                    Delete Feedback
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to delete feedback #<span id="deleteFbId"></span>?
+                This can't be undone.
+            </div>
+
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteFeedbackForm" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // View modal: fill from the clicked username cell
+    document.getElementById('feedbackModal').addEventListener('show.bs.modal', function (event) {
+        const cell = event.relatedTarget;
+        const rating = parseInt(cell.dataset.rating, 10) || 0;
+
+        document.getElementById('fbId').textContent = cell.dataset.id;
+        document.getElementById('fbUser').textContent = cell.dataset.user;
+        document.getElementById('fbRating').textContent = rating + '/5';
+        document.getElementById('fbStars').textContent = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+        document.getElementById('fbMessage').textContent = cell.dataset.message || 'No message';
+    });
+
+    // Delete modal: point the form at the clicked row's delete URL
+    document.getElementById('deleteFeedbackModal').addEventListener('show.bs.modal', function (event) {
+        const btn = event.relatedTarget;
+        document.getElementById('deleteFbId').textContent = btn.dataset.id;
+        document.getElementById('deleteFeedbackForm').action = btn.dataset.deleteUrl;
+    });
+</script>
+
+{% endblock %}
